@@ -1,0 +1,1643 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2B5747">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="다했어요판">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>다했어요판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Jua&display=swap">
+<style>
+:root{
+  --page:#EDF1EE;--panel:#FFFFFF;--panel-2:#F4F7F5;--line:#D3DCD7;--line-2:#B6C4BD;
+  --text:#15201C;--text-2:#4A5A54;--text-3:#6B7A74;
+  --accent:#2B5747;--accent-ink:#FFFFFF;
+  --board:#2B5747;--board-deep:#1E3F33;--bezel:#16211D;
+  --chalk:#F1F4EE;--chalk-2:rgba(241,244,238,.74);--chalk-3:rgba(241,244,238,.3);
+  --tag:#FFFFFF;--tag-ink:#1C2925;--tag-2:#5A6A64;
+  --done:#FFD43B;--done-ink:#3A2C00;--done-soft:#FFF1BF;--done-soft-ink:#5A4300;
+  --stamp:#D62839;--danger:#B3261E;
+  --font-ui:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",system-ui,sans-serif;
+  --font-board:"Jua","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",system-ui,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --page:#101714;--panel:#18221E;--panel-2:#1E2A25;--line:#2D3B35;--line-2:#3E5048;
+    --text:#E6EDE9;--text-2:#A8B7B0;--text-3:#86968F;
+    --accent:#8FC9B0;--accent-ink:#0D1A14;
+    --board:#24493C;--board-deep:#183329;--bezel:#060908;
+    --tag:#F3F5F1;--done:#F4C93A;--done-soft:#3B3318;--done-soft-ink:#F6DD8C;
+    --danger:#FF8A80;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#101714;--panel:#18221E;--panel-2:#1E2A25;--line:#2D3B35;--line-2:#3E5048;
+  --text:#E6EDE9;--text-2:#A8B7B0;--text-3:#86968F;
+  --accent:#8FC9B0;--accent-ink:#0D1A14;
+  --board:#24493C;--board-deep:#183329;--bezel:#060908;
+  --tag:#F3F5F1;--done:#F4C93A;--done-soft:#3B3318;--done-soft-ink:#F6DD8C;
+  --danger:#FF8A80;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;background:var(--page);color:var(--text);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.app{height:100%;display:flex;flex-direction:column;min-height:0}
+
+/* 학생용 판 */
+.board{position:relative;flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--board);color:var(--chalk);overflow:hidden;font-family:var(--font-board);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.board-top{flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;min-height:46px;padding:8px 12px 0 20px;color:var(--chalk-2);font-size:clamp(13px,calc(var(--u,8px) * 1.7),19px)}
+.date{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.page-dots{display:flex;align-items:center;gap:9px}
+.page-dots i{width:11px;height:11px;border-radius:50%;background:var(--chalk-3)}
+.page-dots i.on{background:var(--done)}
+.gear{justify-self:end;width:42px;height:42px;border:0;border-radius:50%;background:transparent;color:var(--chalk-3);display:grid;place-items:center;touch-action:manipulation}
+.gear:hover{color:var(--chalk-2)}
+.gear svg{width:22px;height:22px}
+.cols{flex:1;min-height:0;display:flex;gap:18px;padding:4px 20px 14px}
+.col{position:relative;flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column}
+.col+.col{border-left:2px dashed var(--chalk-3);padding-left:18px}
+@supports (grid-template-rows:subgrid){
+  .cols{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0 18px}
+  .col{display:grid;grid-row:1 / span 2;grid-template-rows:subgrid;row-gap:0}
+  .col-head{align-self:end}
+}
+.col-head{flex:none;margin-bottom:12px;text-align:center}
+.col-title{margin:0;font-weight:400;font-size:var(--title-size,36px);line-height:1.15;color:var(--chalk);word-break:keep-all;overflow-wrap:anywhere;text-wrap:balance;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.col-meta{display:flex;align-items:center;gap:12px;margin-top:8px}
+.col-count{flex:none;font-size:var(--count-size,20px);line-height:1.1;color:var(--chalk-2);white-space:nowrap}
+.col-count b{font-weight:400;color:var(--done)}
+.col-bar{flex:1;height:6px;border-radius:3px;background:var(--chalk-3);overflow:hidden}
+.col-bar i{display:block;height:100%;width:0;background:var(--done);border-radius:3px;transition:width .35s ease}
+.grid{flex:1;min-height:0;display:grid;gap:var(--gap,10px);grid-template-columns:repeat(var(--cols,6),minmax(0,1fr));grid-auto-rows:var(--card-h,90px);align-content:center}
+.card{position:relative;border:0;border-radius:12px;background:var(--tag);color:var(--tag-ink);font-family:var(--font-board);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;box-shadow:0 3px 0 var(--board-deep);transition:background-color .18s ease,transform .08s ease,box-shadow .08s ease}
+.card:active{transform:translateY(2px);box-shadow:0 1px 0 var(--board-deep)}
+.card:focus-visible{outline:3px solid var(--done);outline-offset:3px}
+.card .no{font-size:var(--no-size,36px);line-height:1}
+.card .nm{margin-top:.2em;max-width:100%;font-size:var(--nm-size,18px);line-height:1.1;color:var(--tag-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card.done{background:var(--done);color:var(--done-ink)}
+.card.done .nm{color:var(--done-ink)}
+.stamp{position:absolute;top:4%;right:3%;width:var(--stamp-size,44px);height:var(--stamp-size,44px);border-radius:50%;border:max(2px,calc(var(--stamp-size,44px)*.06)) solid var(--stamp);color:var(--stamp);display:flex;align-items:center;justify-content:center;text-align:center;font-size:calc(var(--stamp-size,44px)*.28);line-height:1.02;transform:rotate(-14deg);opacity:0;mix-blend-mode:multiply;pointer-events:none}
+.stamp::after{content:"";position:absolute;inset:max(2px,calc(var(--stamp-size,44px)*.07));border:max(1px,calc(var(--stamp-size,44px)*.03)) solid var(--stamp);border-radius:50%}
+.card.done .stamp{opacity:.9}
+.card.pop .stamp{animation:stampIn .36s cubic-bezier(.2,.9,.3,1.25) both}
+@keyframes stampIn{0%{opacity:0;transform:rotate(-34deg) scale(1.9)}62%{opacity:.95;transform:rotate(-11deg) scale(.9)}100%{opacity:.9;transform:rotate(-14deg) scale(1)}}
+.big-stamp{position:absolute;left:50%;top:55%;width:var(--big,220px);height:var(--big,220px);border-radius:50%;border:max(4px,calc(var(--big,220px)*.028)) solid var(--stamp);background:rgba(255,255,255,.94);color:var(--stamp);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.08;transform:translate(-50%,-50%) rotate(-12deg);opacity:0;pointer-events:none}
+.big-stamp::after{content:"";position:absolute;inset:calc(var(--big,220px)*.045);border:max(2px,calc(var(--big,220px)*.01)) solid var(--stamp);border-radius:50%}
+.big-stamp .l1{font-size:calc(var(--big,220px)*.22)}
+.big-stamp .l2{font-size:calc(var(--big,220px)*.13);white-space:nowrap}
+.big-stamp.show{animation:bigIn .5s cubic-bezier(.2,.9,.3,1.2) both,fadeOut .5s ease 2.6s forwards}
+@keyframes bigIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(-36deg) scale(1.8)}65%{opacity:1;transform:translate(-50%,-50%) rotate(-10deg) scale(.94)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-12deg) scale(1)}}
+@keyframes fadeOut{to{opacity:0}}
+.tray{flex:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;min-height:clamp(56px,9%,72px);padding:8px 12px;background:var(--board-deep);border-top:4px solid rgba(0,0,0,.14);color:var(--chalk);font-size:clamp(15px,calc(var(--u,8px) * 2.7),26px)}
+.tray-msg{grid-column:2;min-width:0;text-align:center;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.nav{display:inline-flex;align-items:center;gap:4px;min-height:52px;padding:0 18px;border:2px solid var(--chalk-2);border-radius:999px;background:rgba(255,255,255,.06);color:var(--chalk);font-family:var(--font-board);font-size:.92em;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.nav:active{background:rgba(255,255,255,.2)}
+.nav svg{flex:none;width:1.05em;height:1.05em}
+.nav[hidden]{display:none}
+.nav.prev{grid-column:1}
+.nav.next{grid-column:3}
+.cols.turn{animation:turnIn .2s ease}
+@keyframes turnIn{from{opacity:.2}to{opacity:1}}
+.tray-msg.idle{color:var(--chalk-2)}
+.tray-msg .sub{display:block;margin-top:.12em;font-size:.72em;opacity:.85}
+.empty{flex:1;grid-column:1 / -1;grid-row:1 / -1;display:grid;place-items:center;padding:24px;text-align:center;color:var(--chalk-2);font-size:clamp(17px,calc(var(--u,8px) * 2.6),30px);line-height:1.5}
+
+.sheet{position:absolute;inset:0;z-index:5;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(8,18,14,.58)}
+.sheet.open{display:flex}
+.sheet-box{width:min(360px,100%);max-height:100%;overflow:auto;padding:18px 18px 16px;border-radius:18px;background:var(--board-deep);color:var(--chalk);text-align:center;box-shadow:0 0 0 2px var(--chalk-3)}
+.sheet-box h3{margin:0 0 4px;font-weight:400;font-size:22px}
+.sheet-box>p{margin:0 0 12px;color:var(--chalk-2);font-size:15px}
+.dots{display:flex;justify-content:center;gap:12px;margin:6px 0 14px}
+.dots span{width:16px;height:16px;border:2px solid var(--chalk-2);border-radius:50%}
+.dots span.on{background:var(--chalk);border-color:var(--chalk)}
+.dots.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.keys button{height:56px;border:0;border-radius:12px;background:rgba(255,255,255,.08);color:var(--chalk);font-family:var(--font-board);font-size:24px;touch-action:manipulation}
+.keys button:active{background:rgba(255,255,255,.2)}
+.keys .k-sub{font-size:17px;color:var(--chalk-2)}
+.menu-list{display:grid;gap:8px;text-align:left}
+.menu-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.06);font-size:17px}
+.menu-row small{display:block;margin-top:2px;color:var(--chalk-2);font-size:13px;line-height:1.35}
+.pill{flex:none;min-width:72px;border:2px solid var(--chalk-2);border-radius:999px;background:transparent;color:var(--chalk);padding:4px 14px;font-family:var(--font-board);font-size:16px}
+.pill[aria-pressed="true"]{background:var(--done);border-color:var(--done);color:var(--done-ink)}
+.sheet-close{width:100%;height:48px;margin-top:12px;border:0;border-radius:12px;background:var(--chalk);color:var(--board-deep);font-family:var(--font-board);font-size:18px}
+
+/* 교사 화면 */
+.tv{container-type:inline-size;color:var(--text)}
+.tv-inner{max-width:1180px;margin:0 auto;padding:16px 18px 28px}
+.tv-head{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin-bottom:10px}
+.tv-head h1{margin:0;font-size:20px;font-weight:600}
+.status{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel-2);color:var(--text-2);font-size:12.5px}
+.status::before{content:"";width:8px;height:8px;border-radius:50%;background:#E0A21B}
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{margin-bottom:-1px;padding:10px 12px 9px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-2);font-size:15px;white-space:nowrap}
+.tabs button[aria-selected="true"]{border-bottom-color:var(--accent);color:var(--text);font-weight:600}
+.flash{margin:0 0 12px;padding:9px 12px;border-radius:10px;background:var(--done-soft);color:var(--done-soft-ink);font-size:14px}
+.boards-layout{display:grid;gap:16px}
+.detail{order:-1}
+@container (min-width:760px){
+  .boards-layout{grid-template-columns:minmax(260px,320px) minmax(0,1fr);align-items:start}
+  .detail{order:0}
+}
+.newb{display:flex;gap:8px}
+.input{flex:1;min-width:0;height:40px;padding:0 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel)}
+.input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.btn{height:40px;padding:0 14px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel);font-size:14px;font-weight:500;white-space:nowrap}
+.btn:hover{background:var(--panel-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--danger)}
+.btn.sm{height:32px;padding:0 10px;border-radius:8px;font-size:13px}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
+.quick button{padding:3px 10px;border:1px dashed var(--line-2);border-radius:999px;background:transparent;color:var(--text-2);font-size:13px}
+.quick button:hover{border-style:solid;color:var(--text)}
+.check{display:flex;align-items:center;gap:6px;margin:8px 0 14px;color:var(--text-2);font-size:13.5px}
+.list-h{margin:0 0 6px;color:var(--text-2);font-size:13px;font-weight:500}
+.blist{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.bitem{overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.bitem.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.bsel{display:block;width:100%;padding:10px 12px 8px;border:0;background:transparent;text-align:left}
+.bsel .t{display:flex;justify-content:space-between;gap:10px;font-weight:500}
+.bsel .t span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c{color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mini{display:block;height:5px;margin-top:7px;overflow:hidden;border-radius:3px;background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--line)}
+.mini i{display:block;height:100%;background:var(--done)}
+.bfoot{display:flex;justify-content:flex-end;padding:0 10px 10px}
+.showbtn{padding:3px 10px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);color:var(--text-2);font-size:12.5px}
+.showbtn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.archive{margin-top:14px}
+.archive summary{cursor:pointer;color:var(--text-2);font-size:13.5px}
+.arow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.arow .acts{display:flex;gap:6px}
+.detail{padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.dt-title{display:block;width:calc(100% + 12px);margin:0 0 0 -7px;padding:2px 6px;border:1px solid transparent;border-radius:8px;background:transparent;font-size:22px;font-weight:600}
+.dt-title:hover{border-color:var(--line)}
+.dt-title:focus{border-color:var(--accent);outline:none;background:var(--panel-2)}
+.dt-meta{margin:4px 0 8px;color:var(--text-2);font-size:14px}
+.dt-bar{height:8px;margin-bottom:16px;overflow:hidden;border-radius:4px;background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--line)}
+.dt-bar i{display:block;height:100%;background:var(--done);transition:width .3s ease}
+.grp h3{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:15px;font-weight:600}
+.grp+.grp{margin-top:18px}
+.count{padding:0 8px;border:1px solid var(--line);border-radius:999px;background:var(--panel-2);color:var(--text-2);font-size:12.5px;font-weight:600}
+.count.todo{border-color:var(--stamp);background:transparent;color:var(--stamp)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:34px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid var(--line-2);border-radius:9px;background:var(--panel);font-size:14px}
+.chip b{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
+.chip:hover{border-color:var(--accent)}
+.chip.d{border-color:transparent;background:var(--done-soft);color:var(--done-soft-ink)}
+.chip.d b{color:inherit}
+.chip.new{animation:chipIn 1.2s ease}
+@keyframes chipIn{0%{box-shadow:0 0 0 4px var(--done)}100%{box-shadow:0 0 0 0 transparent}}
+.chip.undo-new{animation:chipOut 1.4s ease}
+@keyframes chipOut{0%{box-shadow:0 0 0 4px rgba(214,40,57,.45)}100%{box-shadow:0 0 0 0 transparent}}
+.hint{margin:6px 0 0;color:var(--text-3);font-size:12.5px}
+.none{color:var(--text-3);font-size:14px}
+.dt-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.lead{margin:0 0 12px;color:var(--text-2);font-size:14px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.addrow{margin-top:0}
+.addrow .no-in{flex:0 0 84px}
+.roster{width:100%;margin-top:12px;border-collapse:collapse}
+.roster th{padding:6px;border-bottom:1px solid var(--line);color:var(--text-2);font-size:12.5px;font-weight:500;text-align:left}
+.roster td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.roster .in{width:100%;height:34px;padding:0 8px;border:1px solid transparent;border-radius:8px;background:transparent}
+.roster .in:hover{border-color:var(--line)}
+.roster .in:focus{border-color:var(--accent);outline:none;background:var(--panel-2)}
+.roster .in-no{width:72px;font-variant-numeric:tabular-nums}
+.roster td:last-child{width:1%;text-align:right}
+.dup{color:var(--danger);font-size:12px}
+.bulk{margin-top:18px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2)}
+.bulk summary{cursor:pointer;font-weight:500}
+.bulk textarea{width:100%;min-height:140px;margin-top:10px;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel);line-height:1.5;resize:vertical}
+.msg{color:var(--text-2);font-size:13px}
+.msg.err{color:var(--danger)}
+.set{padding:14px 0;border-bottom:1px solid var(--line)}
+.set.last{border-bottom:0}
+.set h3{margin:0 0 2px;font-size:15px;font-weight:600}
+.set p{margin:0 0 10px;color:var(--text-2);font-size:13.5px}
+.set.muted h3,.set.muted p{color:var(--text-3)}
+.pinrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pin-in{flex:0 0 140px;letter-spacing:.3em;text-align:center}
+.pin-in::placeholder{letter-spacing:normal}
+.opts{display:inline-flex;overflow:hidden;border:1px solid var(--line-2);border-radius:10px}
+.opts button{padding:7px 14px;border:0;border-right:1px solid var(--line-2);background:var(--panel);font-size:14px}
+.opts button:last-child{border-right:0}
+.opts button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:500}
+
+.dlg-back{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:rgba(10,18,15,.45)}
+.dlg-back.open{display:flex}
+.dlg{width:min(420px,100%);padding:20px;border-radius:16px;background:var(--panel);color:var(--text);box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.dlg p{margin:0 0 16px;font-size:15.5px;line-height:1.6}
+.dlg .row{justify-content:flex-end;margin:0}
+
+@media (prefers-reduced-motion:reduce){
+  .card.pop .stamp,.dots.shake,.chip.new,.chip.undo-new,.cols.turn{animation:none!important}
+  .big-stamp.show{animation:none!important;opacity:1}
+  .card,.col-bar i,.dt-bar i{transition:none}
+}
+
+/* ---------- 연결판: 화면 구성 ---------- */
+.teacher-page{flex:1;min-height:0;overflow:auto;background:var(--page)}
+.screen{min-height:100%;display:grid;place-items:center;padding:24px}
+.card-box{width:min(440px,100%);padding:28px 26px;border:1px solid var(--line);border-radius:18px;background:var(--panel);text-align:center}
+.card-box h1{margin:0 0 8px;font-size:22px;font-weight:600}
+.card-box p{margin:0 0 18px;color:var(--text-2);font-size:14.5px}
+.card-box .btn{height:44px;padding:0 18px;font-size:15px}
+.card-box .fine{margin:16px 0 0;color:var(--text-3);font-size:12.5px}
+.spinner{width:28px;height:28px;margin:0 auto 14px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 태블릿: 연결을 기다리는 화면 */
+.wait{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}
+.wait-label{color:var(--chalk-2);font-size:clamp(18px,calc(var(--u,8px) * 2.4),28px)}
+.wait-code{color:var(--done);font-size:clamp(64px,calc(var(--u,8px) * 14),160px);line-height:1;letter-spacing:.08em}
+.wait-help{max-width:30em;word-break:keep-all;text-wrap:balance;color:var(--chalk);font-size:clamp(16px,calc(var(--u,8px) * 2),24px);line-height:1.5}
+.wait-help b{font-weight:400;color:var(--done)}
+.wait-small{color:var(--chalk-2);font-size:clamp(13px,calc(var(--u,8px) * 1.5),17px)}
+.net{position:absolute;top:10px;left:50%;z-index:4;max-width:calc(100% - 120px);padding:6px 14px;border-radius:999px;background:var(--done);color:var(--done-ink);font-size:clamp(13px,calc(var(--u,8px) * 1.6),18px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translateX(-50%)}
+.net[hidden]{display:none}
+
+/* 교사 화면: 계정, 연결 상태, 태블릿 목록 */
+.acct{display:flex;align-items:center;flex-wrap:wrap;gap:8px;color:var(--text-2);font-size:13px}
+.status.on::before{background:#2E9E62}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--stamp);color:#fff;font-size:12px;font-weight:600}
+.badge[hidden]{display:none}
+.dev{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2)}
+.dev+.dev{margin-top:8px}
+.dev.pending{border-color:var(--stamp);background:transparent}
+.dev-code{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.dev-info{flex:1;min-width:160px;color:var(--text-2);font-size:13.5px}
+.dev-acts{display:flex;gap:6px}
+.update{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:0 0 12px;padding:9px 12px;border:1px solid var(--accent);border-radius:10px;font-size:14px}
+.update[hidden]{display:none}
+.ver{margin:10px 0 0;color:var(--text-3);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<div class="dlg-back" id="dlg">
+  <div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="dlg-text">
+    <p id="dlg-text"></p>
+    <div class="row">
+      <button type="button" class="btn" data-dlg="cancel">그만두기</button>
+      <button type="button" class="btn primary" data-dlg="ok">확인</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signInAnonymously, signInWithPopup, GoogleAuthProvider, signOut } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc, getDoc, writeBatch, deleteField, FieldPath, increment } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+
+/* ---------- 기본값 ---------- */
+const APP_VERSION = '2026-09-22-1';   /* 파일을 고칠 때마다 이 번호를 바꾸면 태블릿이 새 버전을 알아챕니다 */
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyA7ZaFEC2JU4bNL8u35ESciXPPMHkXtLkk',
+  authDomain: 'dahaesseoyo-board.firebaseapp.com',
+  projectId: 'dahaesseoyo-board',
+  storageBucket: 'dahaesseoyo-board.firebasestorage.app',
+  messagingSenderId: '809885953434',
+  appId: '1:809885953434:web:2bf996ba08ea2aae85de23'
+};
+const MODE = (new URLSearchParams(location.search).has('teacher') || location.hash === '#teacher') ? 'teacher' : 'board';
+const PER_PAGE_WIDE = 3;   /* 가로 화면에서 한 번에 보이는 판 수 (세로 화면은 1개) */
+const GUARD_MS = 1000;     /* 빠르게 두 번 눌러 곧바로 취소되는 일을 막는 시간 */
+const DEFAULT_SETTINGS = { pin: '1234', sound: true, selfCancel: true, praise: true, reloadSeq: 0 };
+const QUICK = ['수학 익힘책', '국어 활동', '받아쓰기', '알림장 쓰기', '독서록'];
+const HEADER_WORDS = new Set(['이름', '성명', '학생', '학생명', '번호']);
+const GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37c1 .608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+const rid = (p) => p + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const doneCount = (b, s) => s.students.reduce((n, x) => n + (b.done[x.id] ? 1 : 0), 0);
+const composing = (e) => e.isComposing || e.keyCode === 229;
+
+function deviceKind() {
+  const ua = navigator.userAgent || '';
+  if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return '아이패드';
+  if (/Android/.test(ua)) return /Mobile/.test(ua) ? '안드로이드 휴대폰' : '안드로이드 태블릿';
+  if (/iPhone/.test(ua)) return '아이폰';
+  if (/CrOS/.test(ua)) return '크롬북';
+  if (/Windows/.test(ua)) return '윈도우 PC';
+  if (/Macintosh/.test(ua)) return '맥';
+  return '기기';
+}
+function timeText(ms) {
+  if (!ms) return '';
+  const d = Date.now() - ms;
+  if (d < 60000) return '방금';
+  if (d < 3600000) return Math.floor(d / 60000) + '분 전';
+  if (d < 86400000) return Math.floor(d / 3600000) + '시간 전';
+  return Math.floor(d / 86400000) + '일 전';
+}
+/* 오류를 선생님이 알아보기 쉬운 말로 바꿉니다 */
+function describeError(err) {
+  const code = (err && err.code) || '';
+  const map = {
+    'permission-denied': '기록장에 들어갈 권한이 없어요. Firebase 보안 규칙이 게시되었는지 확인해 주세요.',
+    'unavailable': '인터넷 연결을 확인해 주세요.',
+    'auth/network-request-failed': '인터넷 연결을 확인해 주세요.',
+    'auth/operation-not-allowed': 'Firebase에서 이 로그인 방법이 꺼져 있어요. 2단계의 로그인 방법 켜기를 확인해 주세요.',
+    'auth/admin-restricted-operation': 'Firebase에서 익명 로그인이 꺼져 있어요. 2단계의 로그인 방법 켜기를 확인해 주세요.',
+    'auth/unauthorized-domain': '이 주소가 Firebase에 등록되어 있지 않아요. 2단계의 GitHub 주소 허락하기를 확인해 주세요.',
+    'auth/popup-blocked': '브라우저가 로그인 창을 막았어요. 주소창 오른쪽에서 팝업을 허용해 주세요.',
+    'auth/popup-closed-by-user': '로그인 창이 닫혔어요. 다시 눌러 주세요.',
+    'auth/cancelled-popup-request': '로그인 창이 닫혔어요. 다시 눌러 주세요.',
+    'auth/operation-not-supported-in-this-environment': '이 파일은 컴퓨터에서 바로 열면 작동하지 않아요. GitHub 주소로 열어 주세요.'
+  };
+  return map[code] || ('알 수 없는 문제가 생겼어요' + (code ? ' (' + code + ')' : '') + '.');
+}
+
+/* 이름 뒤에 '아/야'를 붙여 부르는 말로 만듭니다 (민준아, 지우야) */
+function callName(name) {
+  const t = name.trim();
+  const c = t.charCodeAt(t.length - 1);
+  if (c >= 0xac00 && c <= 0xd7a3) return t + ((c - 0xac00) % 28 ? '아' : '야');
+  return t;
+}
+
+
+/* 붙여넣은 명단 읽기: '1 민준', '1번 민준', '1. 민준', 엑셀 두 칸(번호, 이름), 이름만 */
+function parseRoster(text) {
+  const out = [];
+  text.split(/\r?\n/).forEach((line) => {
+    const raw = line.trim();
+    if (!raw) return;
+    const cells = raw.split('\t').map((c) => c.trim()).filter(Boolean);
+    let no = null, name = '';
+    if (cells.length > 1) {
+      if (/^\d{1,3}$/.test(cells[0])) { no = +cells[0]; name = cells[1]; } else { name = cells[0]; }
+    } else {
+      const m = raw.match(/^(\d{1,3})\s*(?:번|\.|\)|,)?\s*(.+)$/);
+      if (m) { no = +m[1]; name = m[2]; } else { name = raw; }
+    }
+    name = name.replace(/\s+/g, ' ').trim().slice(0, 20);
+    if (!name || HEADER_WORDS.has(name)) return;
+    out.push({ no: no && no > 0 && no < 100 ? no : null, name });
+  });
+  return out;
+}
+
+
+/* ---------- 소리 (파일 없이 브라우저에서 만듭니다) ---------- */
+const Sound = (() => {
+  let ctx = null;
+  function unlock() {
+    try {
+      if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) ctx = new AC(); }
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+    } catch (e) { ctx = null; }
+  }
+  function tone(freq, at, dur, vol) {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(freq, at);
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(vol, at + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(at); o.stop(at + dur + 0.05);
+  }
+  function play(kind) {
+    if (!ctx) return;
+    try {
+      const t = ctx.currentTime + 0.01;
+      if (kind === 'all') [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, t + i * 0.11, 0.5, 0.22));
+      else if (kind === 'undo') { tone(660, t, 0.18, 0.12); tone(494, t + 0.09, 0.24, 0.12); }
+      else { tone(880, t, 0.3, 0.22); tone(1318.5, t + 0.1, 0.42, 0.2); }
+    } catch (e) { /* 소리가 안 나도 판은 그대로 작동합니다 */ }
+  }
+  return { unlock, play };
+})();
+
+/* ---------- 화면 켜짐 유지 ---------- */
+const Wake = (() => {
+  let sentinel = null, wanted = false, status = 'off';
+  async function request() {
+    if (!('wakeLock' in navigator)) { status = 'unsupported'; return; }
+    try {
+      sentinel = await navigator.wakeLock.request('screen');
+      status = 'on';
+      sentinel.addEventListener('release', () => { status = 'off'; });
+    } catch (e) { status = 'blocked'; }
+  }
+  document.addEventListener('visibilitychange', () => { if (wanted && document.visibilityState === 'visible') request(); });
+  return {
+    enable() { wanted = true; if (!sentinel || sentinel.released) request(); },
+    status: () => status
+  };
+})();
+
+/* ---------- 확인 창 ---------- */
+function confirmBox(text, okLabel) {
+  return new Promise((resolve) => {
+    const back = document.getElementById('dlg');
+    const ok = back.querySelector('[data-dlg="ok"]');
+    back.querySelector('#dlg-text').textContent = text;
+    ok.textContent = okLabel || '확인';
+    back.classList.add('open');
+    ok.focus();
+    function finish(v) {
+      back.classList.remove('open');
+      back.removeEventListener('click', onClick);
+      document.removeEventListener('keydown', onKey);
+      resolve(v);
+    }
+    function onClick(e) {
+      const b = e.target.closest('[data-dlg]');
+      if (b) finish(b.dataset.dlg === 'ok');
+      else if (e.target === back) finish(false);
+    }
+    function onKey(e) { if (e.key === 'Escape') finish(false); }
+    back.addEventListener('click', onClick);
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+
+/* ======================================================
+   Firebase 연결
+   ====================================================== */
+const fbApp = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(fbApp);
+let db;
+try {
+  /* 인터넷이 잠깐 끊겨도 기록이 기기에 남았다가 다시 연결되면 보내지도록 합니다 */
+  db = initializeFirestore(fbApp, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+} catch (e) {
+  db = getFirestore(fbApp);
+}
+const R = {
+  settings: () => doc(db, 'settings', 'main'),
+  roster: () => doc(db, 'roster', 'main'),
+  boards: () => collection(db, 'boards'),
+  board: (id) => doc(db, 'boards', id),
+  devices: () => collection(db, 'devices'),
+  device: (uid) => doc(db, 'devices', uid)
+};
+
+/* ---------- 저장소 ----------
+   시제품의 저장소와 똑같은 모양이라, 화면 코드는 그대로 쓰고 저장 위치만 Firebase로 바뀝니다. */
+function createCloudStore(role, handlers) {
+  handlers = handlers || {};
+  const subs = new Set();
+  const parts = { settings: undefined, roster: undefined, boards: undefined, devices: role === 'teacher' ? undefined : [] };
+  let state = null, unsubs = [], resolveReady;
+  const readyP = new Promise((r) => { resolveReady = r; });
+  const fail = (err) => { if (handlers.onListenError) handlers.onListenError(err); };
+  const act = (p) => Promise.resolve(p).catch((err) => { if (handlers.onWriteError) handlers.onWriteError(err); });
+
+  function compose(meta) {
+    if (parts.settings === undefined || parts.roster === undefined || parts.boards === undefined || parts.devices === undefined) return;
+    const items = parts.roster && Array.isArray(parts.roster.items) ? parts.roster.items : [];
+    const students = items.filter((x) => x && x.id && x.name).map((x) => ({ id: String(x.id), no: Number(x.no) || 0, name: String(x.name) }));
+    students.sort((a, b) => (a.no - b.no) || a.name.localeCompare(b.name, 'ko'));
+    const boards = parts.boards.map((b) => ({
+      id: b.id, title: String(b.title || ''), createdAt: Number(b.createdAt) || 0,
+      archived: !!b.archived, shown: !!b.shown, done: b.done && typeof b.done === 'object' ? b.done : {}
+    }));
+    boards.sort((a, b) => b.createdAt - a.createdAt);
+    const show = boards.filter((b) => b.shown && !b.archived).map((b) => b.id);
+    const settings = Object.assign({}, DEFAULT_SETTINGS, parts.settings || {});
+    const first = !state;
+    state = { students, boards, show, settings, devices: parts.devices };
+    const m = first ? { initial: true } : (meta || {});
+    subs.forEach((cb) => cb(state, m));
+    if (first) resolveReady(state);
+  }
+
+  function start() {
+    unsubs.push(onSnapshot(R.settings(), (snap) => { parts.settings = snap.exists() ? snap.data() : null; compose({ type: 'settings' }); }, fail));
+    unsubs.push(onSnapshot(R.roster(), (snap) => { parts.roster = snap.exists() ? snap.data() : null; compose({ type: 'roster' }); }, fail));
+    unsubs.push(onSnapshot(R.boards(), (qs) => {
+      const prev = parts.boards;
+      const next = qs.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+      let meta = { type: 'boards' };
+      if (prev) {
+        /* 다른 기기에서 한 명의 완료·취소가 들어오면 교사 화면에서 그 이름을 잠깐 표시합니다 */
+        qs.docChanges().forEach((ch) => {
+          if (ch.type !== 'modified') return;
+          const before = prev.find((x) => x.id === ch.doc.id);
+          if (!before) return;
+          const bd = before.done || {}, ad = ch.doc.data().done || {};
+          const added = Object.keys(ad).filter((k) => ad[k] && !bd[k]);
+          const removed = Object.keys(bd).filter((k) => bd[k] && !ad[k]);
+          const by = ch.doc.metadata.hasPendingWrites ? 'local' : 'tablet';
+          if (added.length === 1 && !removed.length) meta = { type: 'done', bid: ch.doc.id, sid: added[0], by };
+          else if (removed.length === 1 && !added.length) meta = { type: 'undo', bid: ch.doc.id, sid: removed[0], by };
+        });
+      }
+      parts.boards = next;
+      compose(meta);
+    }, fail));
+    if (role === 'teacher') {
+      unsubs.push(onSnapshot(R.devices(), (qs) => { parts.devices = qs.docs.map((d) => Object.assign({ id: d.id }, d.data())); compose({ type: 'devices' }); }, fail));
+    }
+    return readyP;
+  }
+  function stop() {
+    unsubs.forEach((u) => { try { u(); } catch (e) { /* 무시 */ } });
+    unsubs = [];
+    subs.clear();
+  }
+
+  const cur = () => state || { students: [], boards: [], show: [], settings: Object.assign({}, DEFAULT_SETTINGS), devices: [] };
+  const clean = (list) => list.map((x) => ({ id: x.id, no: x.no, name: x.name }));
+  const saveRoster = (items) => act(setDoc(R.roster(), { items: clean(items), updatedAt: Date.now() }));
+
+  return {
+    get: () => state,
+    start,
+    stop,
+    subscribe(cb) { subs.add(cb); if (state) cb(state, { initial: true }); return () => subs.delete(cb); },
+    /* 판 */
+    markDone(bid, sid) { return act(updateDoc(R.board(bid), new FieldPath('done', sid), Date.now())); },
+    unmark(bid, sid) { return act(updateDoc(R.board(bid), new FieldPath('done', sid), deleteField())); },
+    addBoard(title, show) {
+      const ref = doc(R.boards());
+      act(setDoc(ref, { title, createdAt: Date.now(), archived: false, shown: !!show, done: {} }));
+      return ref.id;
+    },
+    renameBoard(id, title) { act(updateDoc(R.board(id), { title })); },
+    resetBoard(id) { act(updateDoc(R.board(id), { done: {} })); },
+    archiveBoard(id, flag) { act(updateDoc(R.board(id), flag ? { archived: true, shown: false } : { archived: false })); },
+    deleteBoard(id) { act(deleteDoc(R.board(id))); },
+    toggleShow(id) {
+      const b = cur().boards.find((x) => x.id === id);
+      if (!b) return 'none';
+      act(updateDoc(R.board(id), { shown: !b.shown }));
+      return b.shown ? 'hidden' : 'shown';
+    },
+    /* 명단 */
+    addStudents(list) {
+      const items = cur().students.map((x) => Object.assign({}, x));
+      let max = items.reduce((m, x) => Math.max(m, x.no), 0);
+      list.forEach((e) => {
+        const taken = e.no && items.some((x) => x.no === e.no);
+        const no = e.no && !taken ? e.no : ++max;
+        if (no > max) max = no;
+        items.push({ id: rid('s'), no, name: e.name });
+      });
+      saveRoster(items);
+    },
+    replaceStudents(list) {
+      let max = list.reduce((m, e) => Math.max(m, e.no || 0), 0);
+      const used = new Set();
+      const items = list.map((e) => {
+        let no = e.no;
+        if (!no || used.has(no)) no = ++max;
+        used.add(no);
+        return { id: rid('s'), no, name: e.name };
+      });
+      const batch = writeBatch(db);
+      batch.set(R.roster(), { items: clean(items), updatedAt: Date.now() });
+      cur().boards.forEach((b) => { if (Object.keys(b.done).length) batch.update(R.board(b.id), { done: {} }); });
+      act(batch.commit());
+    },
+    updateStudent(id, patch) { saveRoster(cur().students.map((x) => (x.id === id ? Object.assign({}, x, patch) : x))); },
+    removeStudent(id) {
+      const batch = writeBatch(db);
+      batch.set(R.roster(), { items: clean(cur().students.filter((x) => x.id !== id)), updatedAt: Date.now() });
+      cur().boards.forEach((b) => { if (b.done[id]) batch.update(R.board(b.id), new FieldPath('done', id), deleteField()); });
+      act(batch.commit());
+    },
+    renumber() { saveRoster(cur().students.map((x, i) => Object.assign({}, x, { no: i + 1 }))); },
+    /* 설정과 태블릿 */
+    setSetting(k, v) { act(updateDoc(R.settings(), { [k]: v })); },
+    reloadTablets() { act(updateDoc(R.settings(), { reloadSeq: increment(1) })); },
+    approveDevice(uid) { act(updateDoc(R.device(uid), { approved: true })); },
+    removeDevice(uid) { act(deleteDoc(R.device(uid))); }
+  };
+}
+
+/* ======================================================
+   학생용 판 (교실 앞 태블릿)
+   ====================================================== */
+function BoardView(root, store, ctx) {
+  const ARROW_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+  const ARROW_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+  root.innerHTML =
+    '<div class="board-top"><span class="date"></span><div class="page-dots" aria-hidden="true"></div>' +
+    '<button type="button" class="gear" aria-label="태블릿 설정 열기, 잠금번호가 필요해요">' + GEAR + '</button></div>' +
+    '<span class="sr page-live" aria-live="polite"></span>' +
+    '<div class="cols"></div>' +
+    '<div class="tray">' +
+    '<button type="button" class="nav prev" hidden aria-label="이전 판 보기">' + ARROW_L + '<span>이전</span></button>' +
+    '<span class="tray-msg idle" aria-live="polite"></span>' +
+    '<button type="button" class="nav next" hidden aria-label="다음 판 보기"><span>다음</span>' + ARROW_R + '</button>' +
+    '</div>' +
+    '<div class="net" role="status" hidden></div>' +
+    '<div class="sheet" role="dialog" aria-modal="true" aria-label="태블릿 설정"><div class="sheet-box"></div></div>';
+
+  const $ = (q) => root.querySelector(q);
+  const colsEl = $('.cols'), msgEl = $('.tray-msg'), sheet = $('.sheet'), box = $('.sheet-box'), dateEl = $('.date'), gear = $('.gear');
+  const dotsEl = $('.page-dots'), liveEl = $('.page-live'), prevBtn = $('.nav.prev'), nextBtn = $('.nav.next'), netEl = $('.net');
+  const cols = new Map();
+  const guard = new Map();
+  let sayTimer = 0;
+  let page = 0, perPage = PER_PAGE_WIDE, pages = 1;
+  let lastState = null, prevShown = null;
+
+  const idleHTML = () => (store.get().settings.selfCancel
+    ? '다 했으면 내 번호를 눌러요<span class="sub">잘못 눌렀으면 한 번 더 눌러요</span>'
+    : '다 했으면 내 번호를 눌러요');
+  msgEl.innerHTML = idleHTML();
+
+  function tickDate() {
+    try { dateEl.textContent = new Intl.DateTimeFormat('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' }).format(new Date()); }
+    catch (e) { dateEl.textContent = ''; }
+  }
+  tickDate();
+  const dateTimer = setInterval(tickDate, 60000);
+
+  /* 카드가 스크롤 없이 한 화면에 가장 크게 들어가도록 줄 수를 고릅니다 */
+  function fit(c) {
+    const colW = c.el.clientWidth;
+    if (colW) {
+      const colH = c.el.clientHeight;
+      /* 제목은 칸 너비와 높이에 맞춰 최대한 크게 (가로 3칸 약 32px, 세로 1칸 52px) */
+      const t = Math.round(Math.max(22, Math.min(colW * 0.09, colH * 0.075, 52)));
+      c.el.style.setProperty('--title-size', t + 'px');
+      c.el.style.setProperty('--count-size', Math.round(Math.max(15, Math.min(t * 0.6, 26))) + 'px');
+      c.el.style.setProperty('--big', Math.round(Math.max(120, Math.min(colW * 0.62, colH * 0.55, 320))) + 'px');
+    }
+    const g = c.grid, W = g.clientWidth, H = g.clientHeight, n = c.n;
+    if (!W || !H || !n) return;
+    const gap = Math.round(Math.max(6, Math.min(14, Math.min(W, H) * 0.018)));
+    let best = null;
+    for (let k = 1; k <= n; k++) {
+      const rows = Math.ceil(n / k);
+      const cw = (W - gap * (k - 1)) / k;
+      const ch = (H - gap * (rows - 1)) / rows;
+      if (cw <= 0 || ch <= 0) continue;
+      const size = Math.min(cw, ch * 1.2);
+      if (!best || size > best.size + 0.01) best = { size, k, cw, ch };
+    }
+    if (!best) return;
+    const cardH = Math.max(34, Math.min(best.ch, best.cw * 1.05));
+    const base = Math.min(cardH, best.cw);
+    const st = g.style;
+    st.setProperty('--cols', best.k);
+    st.setProperty('--gap', gap + 'px');
+    st.setProperty('--card-h', Math.floor(cardH) + 'px');
+    st.setProperty('--no-size', Math.round(base * 0.42) + 'px');
+    st.setProperty('--nm-size', Math.round(Math.min(base * 0.21, best.cw / 3.4)) + 'px');
+    st.setProperty('--stamp-size', Math.round(base * 0.42) + 'px');
+  }
+
+  function ensureCol(bid) {
+    let c = cols.get(bid);
+    if (c) return c;
+    const el = document.createElement('section');
+    el.className = 'col';
+    el.innerHTML = '<div class="col-head"><h2 class="col-title"></h2>' +
+      '<div class="col-meta"><div class="col-bar"><i></i></div><div class="col-count"></div></div></div>' +
+      '<div class="grid" role="group"></div>' +
+      '<div class="big-stamp" aria-hidden="true"><span class="l1">모두</span><span class="l2">다 했어요!</span></div>';
+    c = {
+      el, bid, n: 0, all: undefined, cards: new Map(),
+      title: el.querySelector('.col-title'), count: el.querySelector('.col-count'),
+      bar: el.querySelector('.col-bar i'), grid: el.querySelector('.grid'), big: el.querySelector('.big-stamp')
+    };
+    c.grid.addEventListener('click', (e) => { const b = e.target.closest('.card'); if (b) onTap(bid, b.dataset.sid); });
+    if ('ResizeObserver' in window) { c.ro = new ResizeObserver(() => fit(c)); c.ro.observe(c.grid); }
+    cols.set(bid, c);
+    return c;
+  }
+  function dropCol(bid) {
+    const c = cols.get(bid);
+    if (!c) return;
+    if (c.ro) c.ro.disconnect();
+    clearTimeout(c.bigTimer);
+    c.el.remove();
+    cols.delete(bid);
+  }
+  function celebrate(c) {
+    c.big.classList.remove('show'); void c.big.offsetWidth; c.big.classList.add('show');
+    clearTimeout(c.bigTimer);
+    c.bigTimer = setTimeout(() => c.big.classList.remove('show'), 3300);
+  }
+
+  function updateCol(c, b, s, meta) {
+    c.title.textContent = b.title;
+    const total = s.students.length;
+    const done = doneCount(b, s);
+    c.count.innerHTML = '<b>' + done + '</b> / ' + total + '명';
+    c.bar.style.width = pct(done, total) + '%';
+    c.grid.setAttribute('aria-label', b.title);
+    const seen = new Set();
+    s.students.forEach((st, i) => {
+      seen.add(st.id);
+      let el = c.cards.get(st.id);
+      const isNew = !el;
+      if (isNew) {
+        el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'card';
+        el.dataset.sid = st.id;
+        el.innerHTML = '<span class="no"></span><span class="nm"></span><span class="stamp" aria-hidden="true">다했<br>어요</span>';
+        el.addEventListener('animationend', (ev) => { if (ev.animationName === 'stampIn') el.classList.remove('pop'); });
+        c.cards.set(st.id, el);
+      }
+      if (c.grid.children[i] !== el) c.grid.insertBefore(el, c.grid.children[i] || null);
+      const on = !!b.done[st.id];
+      const was = el.classList.contains('done');
+      el.children[0].textContent = st.no;
+      el.children[1].textContent = st.name;
+      el.classList.toggle('done', on);
+      el.setAttribute('aria-pressed', on ? 'true' : 'false');
+      el.setAttribute('aria-label', st.no + '번 ' + st.name + (on ? (s.settings.selfCancel ? ', 다 했어요, 다시 누르면 취소돼요' : ', 다 했어요') : ', 아직'));
+      if (on && !was && !isNew && !meta.initial) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+    });
+    c.cards.forEach((el, sid) => { if (!seen.has(sid)) { el.remove(); c.cards.delete(sid); } });
+    if (c.n !== total) { c.n = total; fit(c); }
+    const all = total > 0 && done === total;
+    if (all && c.all === false && !meta.initial) celebrate(c);
+    c.all = all;
+  }
+
+  /* 쪽 나누기: 가로 화면은 3개씩, 세로 화면은 1개씩 보여 줍니다 */
+  function calcPerPage() {
+    const w = root.clientWidth, h = root.clientHeight;
+    if (!w || !h) return perPage;
+    return h > w ? 1 : PER_PAGE_WIDE;
+  }
+  function paintPager(total) {
+    const multi = pages > 1;
+    prevBtn.hidden = !multi;
+    nextBtn.hidden = !multi;
+    dotsEl.innerHTML = multi ? Array.from({ length: pages }, (_, i) => '<i' + (i === page ? ' class="on"' : '') + '></i>').join('') : '';
+    const from = page * perPage + 1, to = Math.min(total, (page + 1) * perPage);
+    liveEl.textContent = multi ? '판 ' + total + '개 중 ' + (from === to ? from : from + '~' + to) + '번째를 보고 있어요' : '';
+  }
+
+  function render(s, meta) {
+    lastState = s;
+    const showSet = new Set(s.show);
+    const list = s.boards.filter((b) => !b.archived && showSet.has(b.id));   /* 교사 화면 목록 순서(새 판이 앞) */
+    if (prevShown && !meta.initial) {
+      const idx = list.findIndex((b) => !prevShown.has(b.id));
+      if (idx >= 0) page = Math.floor(idx / perPage);   /* 선생님이 새로 띄운 판이 있는 쪽으로 이동 */
+    }
+    prevShown = new Set(list.map((b) => b.id));
+    pages = Math.max(1, Math.ceil(list.length / perPage));
+    page = Math.min(Math.max(page, 0), pages - 1);
+    paintPager(list.length);
+    if (msgEl.classList.contains('idle')) msgEl.innerHTML = idleHTML();
+    const shown = list.slice(page * perPage, (page + 1) * perPage);
+    const empty = !s.students.length ? '학생 명단이 비어 있어요.<br>교사 화면의 학생 명단에서 넣어 주세요.'
+      : !shown.length ? '지금은 보여 줄 판이 없어요.<br>교사 화면에서 ‘태블릿에 표시’를 눌러 주세요.' : '';
+    if (empty) {
+      Array.from(cols.keys()).forEach(dropCol);
+      colsEl.innerHTML = '<div class="empty">' + empty + '</div>';
+      return;
+    }
+    const e = colsEl.querySelector('.empty');
+    if (e) e.remove();
+    Array.from(cols.keys()).forEach((bid) => { if (!shown.some((b) => b.id === bid)) dropCol(bid); });
+    shown.forEach((b, i) => {
+      const c = ensureCol(b.id);
+      if (colsEl.children[i] !== c.el) colsEl.insertBefore(c.el, colsEl.children[i] || null);
+      updateCol(c, b, s, meta);
+    });
+  }
+
+  function goPage(d) {
+    if (pages <= 1 || !lastState) return;
+    page = (page + d + pages) % pages;   /* 끝에서 누르면 처음으로 돌아갑니다 */
+    colsEl.classList.remove('turn'); void colsEl.offsetWidth; colsEl.classList.add('turn');
+    render(lastState, { paging: true });
+  }
+  prevBtn.addEventListener('click', () => goPage(-1));
+  nextBtn.addEventListener('click', () => goPage(1));
+  colsEl.addEventListener('animationend', (e) => { if (e.animationName === 'turnIn') colsEl.classList.remove('turn'); });
+
+  function onResize() {
+    const w = root.clientWidth, h = root.clientHeight;
+    if (w && h) root.style.setProperty('--u', (Math.min(w, h * 1.4) / 100).toFixed(2) + 'px');
+    const np = calcPerPage();
+    if (np !== perPage) {
+      const first = page * perPage;
+      perPage = np;
+      page = Math.floor(first / perPage);
+      if (lastState) render(lastState, { paging: true });
+    }
+    cols.forEach(fit);
+  }
+
+  /* 메시지 칸(칠판 아래 분필 받침대) */
+  function say(text) {
+    msgEl.textContent = text;
+    msgEl.classList.remove('idle');
+    clearTimeout(sayTimer);
+    sayTimer = setTimeout(idle, 3000);
+  }
+  function idle() {
+    msgEl.innerHTML = idleHTML();
+    msgEl.classList.add('idle');
+  }
+
+  /* 누르면 완료, 다 한 카드를 다시 누르면 취소 */
+  function onTap(bid, sid) {
+    Sound.unlock();
+    Wake.enable();
+    const key = bid + '|' + sid;
+    const now = Date.now();
+    if ((guard.get(key) || 0) > now) return;   /* 방금 바뀐 카드를 곧바로 또 누른 것은 무시합니다 */
+    const s = store.get();
+    const b = s.boards.find((x) => x.id === bid);
+    const st = s.students.find((x) => x.id === sid);
+    if (!b || !st) return;
+    if (b.done[sid]) {
+      if (!s.settings.selfCancel) { say('이미 다 했어요. 바꾸려면 선생님께 말해요.'); return; }
+      guard.set(key, now + GUARD_MS);
+      store.unmark(bid, sid, 'tablet');
+      if (s.settings.sound) Sound.play('undo');
+      say(st.no + '번 ' + st.name + ', 취소했어요');
+      return;
+    }
+    const allDone = s.students.every((x) => x.id === sid || b.done[x.id]);   /* 저장 전에 미리 셉니다 */
+    guard.set(key, now + GUARD_MS);
+    store.markDone(bid, sid, 'tablet');
+    if (s.settings.sound) Sound.play(allDone ? 'all' : 'done');
+    say(allDone ? '모두 다 했어요! 다 같이 박수!'
+      : s.settings.praise ? callName(st.name) + ', 잘했어요!' : st.no + '번 ' + st.name + ', 다 했어요');
+  }
+
+  /* 선생님 전용 설정: 잠금번호 */
+  let pin = '';
+  function paintDots() { box.querySelectorAll('.dots span').forEach((d, i) => d.classList.toggle('on', i < pin.length)); }
+  function openPin() {
+    pin = '';
+    box.innerHTML = '<h3>선생님 확인</h3><p class="pin-help">잠금번호 4자리를 눌러 주세요</p>' +
+      '<div class="dots"><span></span><span></span><span></span><span></span></div><div class="keys">' +
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => '<button type="button" data-key="' + n + '">' + n + '</button>').join('') +
+      '<button type="button" class="k-sub" data-key="close">닫기</button><button type="button" data-key="0">0</button><button type="button" class="k-sub" data-key="back">지움</button></div>';
+    sheet.classList.add('open');
+    const first = box.querySelector('[data-key="1"]');
+    if (first) first.focus({ preventScroll: true });
+  }
+  function closeSheet() {
+    sheet.classList.remove('open');
+    box.innerHTML = '';
+    pin = '';
+    gear.focus({ preventScroll: true });
+  }
+  function wakeText(st) {
+    return ({
+      on: '켜져 있어요',
+      off: '학생이 카드를 처음 누르면 켜져요',
+      unsupported: '이 브라우저는 지원하지 않아요. 기기의 자동 잠금을 꺼 주세요',
+      blocked: '지금 환경에서는 막혀 있어요. 기기의 자동 잠금을 꺼 주세요'
+    })[st] || '';
+  }
+  function openMenu() {
+    const s = store.get().settings;
+    const fsOK = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+    box.innerHTML = '<h3>태블릿 설정</h3><p>학생 화면에는 보이지 않는 메뉴예요</p><div class="menu-list">' +
+      '<div class="menu-row"><span>효과음<small>카드를 누를 때 나는 소리</small></span><button type="button" class="pill" data-menu="sound" aria-pressed="' + (s.sound ? 'true' : 'false') + '">' + (s.sound ? '켜짐' : '꺼짐') + '</button></div>' +
+      (fsOK ? '<div class="menu-row"><span>전체 화면<small>주소창과 메뉴를 숨겨요</small></span><button type="button" class="pill" data-menu="fs">바꾸기</button></div>' : '') +
+      '<div class="menu-row"><span>화면 켜짐 유지<small>' + wakeText(Wake.status()) + '</small></span></div>' +
+      '<div class="menu-row"><span>이 기기<small>' + esc(ctx.deviceText()) + '</small></span></div>' +
+      '<div class="menu-row"><span>화면 버전<small>' + esc(APP_VERSION) + '</small></span></div>' +
+      '</div><button type="button" class="sheet-close" data-key="close">닫기</button>';
+    const first = box.querySelector('[data-menu]');
+    if (first) first.focus({ preventScroll: true });
+  }
+  function toggleFs() {
+    try {
+      const d = document, el = d.documentElement;
+      if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+      else { const r = (el.requestFullscreen || el.webkitRequestFullscreen).call(el); if (r && r.catch) r.catch(() => {}); }
+    } catch (e) { /* 지원하지 않는 환경 */ }
+  }
+  function press(k) {
+    if (k === 'close') { closeSheet(); return; }
+    if (k === 'back') pin = pin.slice(0, -1);
+    else if (/^\d$/.test(k) && pin.length < 4) pin += k;
+    paintDots();
+    if (pin.length < 4) return;
+    if (pin === store.get().settings.pin) { openMenu(); return; }
+    const dots = box.querySelector('.dots');
+    dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake');
+    box.querySelector('.pin-help').textContent = '잠금번호가 달라요. 다시 눌러 주세요';
+    pin = '';
+    setTimeout(paintDots, 300);
+  }
+  box.addEventListener('click', (e) => {
+    const k = e.target.closest('[data-key]');
+    if (k) { press(k.dataset.key); return; }
+    const m = e.target.closest('[data-menu]');
+    if (!m) return;
+    if (m.dataset.menu === 'sound') { store.setSetting('sound', !store.get().settings.sound); openMenu(); }
+    else if (m.dataset.menu === 'fs') toggleFs();
+  });
+  sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });
+  root.addEventListener('keydown', (e) => {
+    if (sheet.classList.contains('open')) {
+      const inPin = !!box.querySelector('.dots');
+      if (e.key === 'Escape') closeSheet();
+      else if (inPin && /^\d$/.test(e.key)) { e.preventDefault(); press(e.key); }
+      else if (inPin && e.key === 'Backspace') { e.preventDefault(); press('back'); }
+      return;
+    }
+    if (e.key === 'ArrowLeft') goPage(-1);
+    else if (e.key === 'ArrowRight') goPage(1);
+  });
+  gear.addEventListener('click', openPin);
+
+  perPage = calcPerPage();
+  const unsubscribe = store.subscribe(render);
+  onResize();
+  const rootRO = 'ResizeObserver' in window ? new ResizeObserver(onResize) : null;
+  if (rootRO) rootRO.observe(root);
+  window.addEventListener('resize', onResize);
+  return {
+    refit: onResize,
+    say,
+    setNet(text) { netEl.textContent = text || ''; netEl.hidden = !text; },
+    menuOpen: () => sheet.classList.contains('open'),
+    destroy() {
+      unsubscribe();
+      clearInterval(dateTimer);
+      clearTimeout(sayTimer);
+      if (rootRO) rootRO.disconnect();
+      window.removeEventListener('resize', onResize);
+      Array.from(cols.keys()).forEach(dropCol);
+    }
+  };
+}
+
+/* ======================================================
+   교사 화면 (선생님 PC)
+   ====================================================== */
+function TeacherView(root, store, ctx) {
+  let sel = null, pendingSel = null;
+  let knownPending = null;
+  let rosterEditing = false, rosterPending = false;
+  let titleEditing = false;
+
+  root.innerHTML = `
+  <div class="tv-inner">
+    <div class="tv-head">
+      <h1>교사 화면</h1>
+      <div class="acct"><span class="status on" id="tv-net">실시간 연결됨</span><span id="tv-email"></span><button type="button" class="btn sm" data-act="logout">로그아웃</button></div>
+    </div>
+    <div class="update" id="tv-update" hidden><span>새 버전이 올라왔어요. 새로고침하면 적용돼요.</span><button type="button" class="btn sm" data-act="reload-self">새로고침</button></div>
+    <div class="tabs" role="tablist" aria-label="교사 메뉴">
+      <button type="button" role="tab" data-tab="boards" aria-selected="true">판 관리</button>
+      <button type="button" role="tab" data-tab="roster" aria-selected="false">학생 명단</button>
+      <button type="button" role="tab" data-tab="settings" aria-selected="false">태블릿 설정<span class="badge" id="tv-badge" hidden></span></button>
+    </div>
+    <p class="flash" id="tv-flash" role="status" hidden></p>
+
+    <div class="tab-panel" data-panel="boards" role="tabpanel">
+      <div class="boards-layout">
+        <div class="bcol">
+          <div class="newb">
+            <input class="input" id="tv-new-title" maxlength="40" autocomplete="off" placeholder="새 판 이름 (예: 수학 익힘책 36쪽)" aria-label="새 판 이름">
+            <button type="button" class="btn primary" data-act="new">만들기</button>
+          </div>
+          <div class="quick">${QUICK.map((q) => `<button type="button" data-quick="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+          <label class="check"><input type="checkbox" id="tv-autoshow" checked> 만들면 바로 태블릿에 표시</label>
+          <p class="list-h">진행 중인 판</p>
+          <ul class="blist" id="tv-blist"></ul>
+          <p class="hint">태블릿에는 이 목록 순서대로 가로 화면에서 3개씩, 세로 화면에서 1개씩 보여요. 더 많으면 학생이 화살표로 넘겨요.</p>
+          <details class="archive"><summary id="tv-asum">보관함</summary><div id="tv-alist"></div></details>
+        </div>
+        <div class="detail" id="tv-detail"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="roster" role="tabpanel" hidden>
+      <p class="lead">번호 순서대로 태블릿에 카드가 놓여요. 개인정보 보호를 위해 성은 빼고 이름만 적기를 권해요. <span class="count" id="tv-rcount"></span></p>
+      <div class="row addrow">
+        <input class="input no-in" id="tv-add-no" type="number" min="1" max="99" inputmode="numeric" placeholder="번호" aria-label="추가할 학생 번호, 비우면 자동으로 붙어요">
+        <input class="input" id="tv-add-name" maxlength="20" autocomplete="off" placeholder="이름" aria-label="추가할 학생 이름">
+        <button type="button" class="btn primary" data-act="add-one">추가</button>
+      </div>
+      <table class="roster">
+        <thead><tr><th scope="col">번호</th><th scope="col">이름</th><th scope="col"><span class="sr">명단에서 빼기</span></th></tr></thead>
+        <tbody id="tv-roster-body"></tbody>
+      </table>
+      <div class="row"><button type="button" class="btn" data-act="renumber">번호 1번부터 다시 매기기</button></div>
+      <details class="bulk">
+        <summary>엑셀이나 메모장에서 한꺼번에 붙여넣기</summary>
+        <p class="hint">한 줄에 한 명씩 적어요. ‘1 민준’처럼 번호를 함께 적어도 되고, 엑셀의 번호와 이름 두 칸을 그대로 복사해도 돼요.</p>
+        <textarea id="tv-bulk" placeholder="1 민준&#10;2 서연&#10;3 도윤" aria-label="붙여넣을 명단"></textarea>
+        <p class="hint" id="tv-bulk-preview"></p>
+        <div class="row">
+          <button type="button" class="btn" data-act="bulk-add">뒤에 추가하기</button>
+          <button type="button" class="btn" data-act="bulk-replace">명단 새로 바꾸기</button>
+          <span class="msg" id="tv-bulk-msg" role="status"></span>
+        </div>
+      </details>
+    </div>
+
+    <div class="tab-panel" data-panel="settings" role="tabpanel" hidden>
+      <section class="set">
+        <h3>태블릿 연결</h3>
+        <p>태블릿에서 다했어요판 주소를 열면 네 자리 번호가 나타나요. 같은 번호를 여기서 승인하면 그 태블릿에 판이 열려요.</p>
+        <div id="tv-devices"></div>
+      </section>
+      <section class="set">
+        <h3>태블릿 잠금번호</h3>
+        <p>태블릿 오른쪽 위의 설정 단추를 누르면 이 번호를 물어요. 처음 번호는 1234이니 꼭 바꿔 주세요.</p>
+        <div class="pinrow">
+          <input class="input pin-in" id="tv-pin" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="새 번호" aria-label="새 잠금번호 4자리">
+          <button type="button" class="btn" data-act="save-pin">바꾸기</button>
+          <span class="msg" id="tv-pin-msg" role="status"></span>
+        </div>
+      </section>
+      <section class="set">
+        <h3>효과음</h3>
+        <p>학생이 카드를 누를 때 짧은 소리를 내요.</p>
+        <div class="opts"><button type="button" data-act="sound" data-v="1">켜기</button><button type="button" data-act="sound" data-v="0">끄기</button></div>
+      </section>
+      <section class="set">
+        <h3>학생이 다시 눌러 취소하기</h3>
+        <p>다 한 카드를 한 번 더 누르면 ‘아직’으로 돌아가요. 빠르게 두 번 눌러 곧바로 취소되는 일을 막으려고, 누른 뒤 1초 동안은 같은 카드를 다시 눌러도 반응하지 않아요. 막기로 두면 선생님만 바꿀 수 있어요.</p>
+        <div class="opts"><button type="button" data-act="self-cancel" data-v="1">허용</button><button type="button" data-act="self-cancel" data-v="0">막기</button></div>
+      </section>
+      <section class="set">
+        <h3>칭찬 문구</h3>
+        <p>누른 학생의 이름을 불러 ‘민준아, 잘했어요!’처럼 보여 줘요. 끄면 ‘1번 민준, 다 했어요’로 짧게 알려요.</p>
+        <div class="opts"><button type="button" data-act="praise" data-v="1">보이기</button><button type="button" data-act="praise" data-v="0">숨기기</button></div>
+      </section>
+      <section class="set last">
+        <h3>태블릿 새로고침</h3>
+        <p>화면 파일을 새로 올린 뒤 누르면, 연결된 태블릿이 곧바로 새 화면을 불러와요. 태블릿은 몇 분마다 새 버전을 스스로 확인하기도 해요.</p>
+        <div class="row" style="margin-top:0"><button type="button" class="btn" data-act="reload-tablets">태블릿 새로고침</button><span class="msg" id="tv-reload-msg" role="status"></span></div>
+        <p class="ver">화면 버전 ${APP_VERSION}</p>
+      </section>
+    </div>
+  </div>`;
+
+  const $ = (q) => root.querySelector(q);
+  const blist = $('#tv-blist'), detailEl = $('#tv-detail'), tbody = $('#tv-roster-body');
+
+  function setTab(t) {
+    root.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+    root.querySelectorAll('[data-panel]').forEach((p) => { p.hidden = p.dataset.panel !== t; });
+  }
+  function flash(text) {
+    const f = $('#tv-flash');
+    f.textContent = text;
+    f.hidden = false;
+    clearTimeout(flash.t);
+    flash.t = setTimeout(() => { f.hidden = true; }, 4000);
+  }
+  function note(q, text, isErr) {
+    const el = $(q);
+    el.textContent = text;
+    el.classList.toggle('err', !!isErr);
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.textContent = ''; }, 4000);
+  }
+  function keepFocus(container, fn) {
+    const a = document.activeElement;
+    let q = null;
+    if (a && container.contains(a) && a.dataset && a.dataset.act) q = '[data-act="' + a.dataset.act + '"]' + (a.dataset.id ? '[data-id="' + a.dataset.id + '"]' : '');
+    fn();
+    if (q) { const n = container.querySelector(q); if (n) n.focus({ preventScroll: true }); }
+  }
+
+  /* --- 판 목록 --- */
+  function renderBoards(s, meta) {
+    const active = s.boards.filter((b) => !b.archived);
+    const archived = s.boards.filter((b) => b.archived);
+    if (pendingSel && active.some((b) => b.id === pendingSel)) { sel = pendingSel; pendingSel = null; }
+    if (!sel || !active.some((b) => b.id === sel)) sel = s.show.find((id) => active.some((b) => b.id === id)) || (active[0] ? active[0].id : null);
+    const total = s.students.length;
+    keepFocus(blist, () => {
+      blist.innerHTML = active.length ? active.map((b) => {
+        const d = doneCount(b, s);
+        const on = s.show.includes(b.id);
+        return '<li class="bitem' + (b.id === sel ? ' sel' : '') + '">' +
+          '<button type="button" class="bsel" data-act="select" data-id="' + b.id + '"' + (b.id === sel ? ' aria-current="true"' : '') + '>' +
+          '<span class="t"><span>' + esc(b.title) + '</span><span class="c">' + d + '/' + total + '</span></span>' +
+          '<span class="mini"><i style="width:' + pct(d, total) + '%"></i></span></button>' +
+          '<div class="bfoot"><button type="button" class="showbtn' + (on ? ' on' : '') + '" data-act="show" data-id="' + b.id + '" aria-pressed="' + on + '">' + (on ? '태블릿에 표시 중' : '태블릿에 표시') + '</button></div></li>';
+      }).join('') : '<li class="none">진행 중인 판이 없어요. 위에서 새 판을 만들어 주세요.</li>';
+    });
+    $('#tv-asum').textContent = '보관함 (' + archived.length + ')';
+    $('#tv-alist').innerHTML = archived.length ? archived.map((b) =>
+      '<div class="arow"><span>' + esc(b.title) + ' <span class="c">' + doneCount(b, s) + '/' + total + '</span></span>' +
+      '<span class="acts"><button type="button" class="btn sm" data-act="restore" data-id="' + b.id + '">되살리기</button>' +
+      '<button type="button" class="btn sm danger" data-act="delete" data-id="' + b.id + '">지우기</button></span></div>'
+    ).join('') : '<p class="none">보관한 판이 없어요.</p>';
+    renderDetail(s, meta);
+  }
+
+  /* --- 선택한 판의 자세한 모습 --- */
+  function renderDetail(s, meta) {
+    const b = s.boards.find((x) => x.id === sel && !x.archived);
+    if (!b) { if (!titleEditing) detailEl.innerHTML = '<p class="none">판 목록에서 판을 고르거나 새로 만들어 주세요.</p>'; return; }
+    const head = detailEl.querySelector('.dt-title');
+    if (!(titleEditing && head && head.dataset.id === b.id)) {
+      detailEl.innerHTML = '<input class="dt-title" data-id="' + b.id + '" maxlength="40" aria-label="판 이름, 눌러서 고칠 수 있어요"><div class="dt-body"></div>';
+      detailEl.querySelector('.dt-title').value = b.title;
+    }
+    const body = detailEl.querySelector('.dt-body');
+    const total = s.students.length;
+    const todo = s.students.filter((x) => !b.done[x.id]);
+    const done = s.students.filter((x) => b.done[x.id]);
+    const on = s.show.includes(b.id);
+    const chip = (x, d) => '<button type="button" class="chip' + (d ? ' d' : '') + '" data-act="' + (d ? 'unmark' : 'mark') + '" data-id="' + x.id + '"><b>' + x.no + '</b>' + esc(x.name) + '</button>';
+    const metaText = !total ? '학생 명단이 비어 있어요' : todo.length ? done.length + '명 다 했어요, ' + todo.length + '명 남았어요' : '모두 다 했어요';
+    keepFocus(body, () => {
+      body.innerHTML =
+        '<p class="dt-meta">' + metaText + (on ? ' (태블릿에 표시 중)' : '') + '</p>' +
+        '<div class="dt-bar"><i style="width:' + pct(done.length, total) + '%"></i></div>' +
+        '<div class="grp"><h3>아직 안 한 학생 <span class="count' + (todo.length ? ' todo' : '') + '">' + todo.length + '명</span></h3>' +
+        '<div class="chips">' + (todo.map((x) => chip(x, false)).join('') || '<span class="none">모두 다 했어요!</span>') + '</div>' +
+        '<p class="hint">이름을 누르면 다 한 것으로 바꿔요.</p></div>' +
+        '<div class="grp"><h3>다 한 학생 <span class="count">' + done.length + '명</span></h3>' +
+        '<div class="chips">' + (done.map((x) => chip(x, true)).join('') || '<span class="none">아직 아무도 없어요.</span>') + '</div>' +
+        '<p class="hint">이름을 누르면 다시 ‘아직’으로 돌려요.</p></div>' +
+        '<div class="dt-actions">' +
+        '<button type="button" class="btn' + (on ? '' : ' primary') + '" data-act="show" data-id="' + b.id + '">' + (on ? '태블릿에서 숨기기' : '태블릿에 표시') + '</button>' +
+        '<button type="button" class="btn" data-act="reset">처음부터 다시</button>' +
+        '<button type="button" class="btn" data-act="archive">보관하기</button></div>';
+    });
+    if (meta && meta.by === 'tablet' && meta.bid === b.id) {
+      const q = meta.type === 'done' ? '.chip.d' : meta.type === 'undo' ? '.chip:not(.d)' : '';
+      const c = q ? body.querySelector(q + '[data-id="' + meta.sid + '"]') : null;
+      if (c) c.classList.add(meta.type === 'done' ? 'new' : 'undo-new');
+    }
+  }
+
+  /* --- 학생 명단 --- */
+  function renderRoster(s) {
+    $('#tv-rcount').textContent = s.students.length + '명';
+    if (rosterEditing) { rosterPending = true; return; }
+    rosterPending = false;
+    const count = {};
+    s.students.forEach((x) => { count[x.no] = (count[x.no] || 0) + 1; });
+    tbody.innerHTML = s.students.length ? s.students.map((x) =>
+      '<tr><td><input class="in in-no" type="number" min="1" max="99" inputmode="numeric" data-field="no" data-id="' + x.id + '" value="' + x.no + '" aria-label="' + esc(x.name) + '의 번호">' +
+      (count[x.no] > 1 ? '<div class="dup">번호가 겹쳐요</div>' : '') + '</td>' +
+      '<td><input class="in" maxlength="20" data-field="name" data-id="' + x.id + '" value="' + esc(x.name) + '" aria-label="' + x.no + '번 이름"></td>' +
+      '<td><button type="button" class="btn sm danger" data-act="del-student" data-id="' + x.id + '">빼기</button></td></tr>'
+    ).join('') : '<tr><td colspan="3" class="none">명단이 비어 있어요. 위에서 한 명씩 추가하거나 아래에서 한꺼번에 붙여넣어 주세요.</td></tr>';
+  }
+
+  /* --- 태블릿 설정 --- */
+  function renderSettings(s) {
+    const st = s.settings;
+    root.querySelectorAll('[data-act="sound"]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.v === '1') === !!st.sound)));
+    root.querySelectorAll('[data-act="self-cancel"]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.v === '1') === !!st.selfCancel)));
+    root.querySelectorAll('[data-act="praise"]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.v === '1') === !!st.praise)));
+    renderDevices(s);
+  }
+
+  /* --- 연결된 태블릿 --- */
+  function renderDevices(s) {
+    const devs = (s.devices || []).slice().sort((a, b) => (a.approved === b.approved ? (b.createdAt || 0) - (a.createdAt || 0) : (a.approved ? 1 : -1)));
+    const pending = devs.filter((d) => !d.approved);
+    const badge = $('#tv-badge');
+    badge.textContent = pending.length;
+    badge.hidden = !pending.length;
+    const box = $('#tv-devices');
+    keepFocus(box, () => {
+      box.innerHTML = devs.length ? devs.map((d) =>
+        '<div class="dev' + (d.approved ? '' : ' pending') + '"><span class="dev-code">' + esc(d.code || '----') + '</span>' +
+        '<span class="dev-info">' + esc(d.agent || '기기') + ', ' + (d.approved ? '연결됨, 마지막 접속 ' + timeText(d.lastSeen) : '승인을 기다려요, ' + timeText(d.createdAt) + ' 요청') + '</span>' +
+        '<span class="dev-acts">' + (d.approved
+          ? '<button type="button" class="btn sm danger" data-act="remove-device" data-id="' + esc(d.id) + '">연결 끊기</button>'
+          : '<button type="button" class="btn sm primary" data-act="approve" data-id="' + esc(d.id) + '">승인</button><button type="button" class="btn sm" data-act="remove-device" data-id="' + esc(d.id) + '">거절</button>') +
+        '</span></div>'
+      ).join('') : '<p class="none">아직 연결을 요청한 태블릿이 없어요.</p>';
+    });
+    const ids = new Set(pending.map((d) => d.id));
+    if (knownPending) {
+      const fresh = pending.find((d) => !knownPending.has(d.id));
+      if (fresh) flash((fresh.code || '새') + '번 태블릿이 연결을 요청했어요. 태블릿 설정에서 승인해 주세요.');
+    }
+    knownPending = ids;
+  }
+
+  function render(s, meta) {
+    renderBoards(s, meta); renderRoster(s); renderSettings(s);
+    if (meta && meta.initial && !s.students.length) {
+      setTab('roster');
+      flash('먼저 학생 명단을 넣어 주세요. 엑셀에서 번호와 이름을 복사해 붙여넣을 수 있어요.');
+    }
+  }
+
+  /* --- 동작 --- */
+  function createBoard() {
+    const inp = $('#tv-new-title');
+    const title = inp.value.trim().replace(/\s+/g, ' ').slice(0, 40);
+    if (!title) { flash('새 판 이름을 적어 주세요.'); inp.focus(); return; }
+    const show = $('#tv-autoshow').checked;
+    pendingSel = store.addBoard(title, show);   /* 저장되어 목록에 나타나면 그 판을 고릅니다 */
+    inp.value = '';
+    flash(show ? '‘' + title + '’ 판을 만들어 태블릿에 표시했어요.' : '‘' + title + '’ 판을 만들었어요.');
+  }
+  function addOne() {
+    const nameEl = $('#tv-add-name'), noEl = $('#tv-add-no');
+    const name = nameEl.value.trim().replace(/\s+/g, ' ').slice(0, 20);
+    if (!name) { nameEl.focus(); return; }
+    const n = parseInt(noEl.value, 10);
+    store.addStudents([{ no: n >= 1 && n <= 99 ? n : null, name }]);
+    nameEl.value = '';
+    noEl.value = '';
+    nameEl.focus();
+  }
+  function savePin() {
+    const inp = $('#tv-pin');
+    const v = inp.value.trim();
+    if (!/^\d{4}$/.test(v)) { note('#tv-pin-msg', '숫자 4자리로 적어 주세요.', true); return; }
+    store.setSetting('pin', v);
+    inp.value = '';
+    note('#tv-pin-msg', '잠금번호를 바꿨어요.');
+  }
+  function moveNext(t) {
+    const list = Array.from(root.querySelectorAll('.roster .in[data-field="' + t.dataset.field + '"]'));
+    const nx = list[list.indexOf(t) + 1];
+    if (nx) { nx.focus(); nx.select(); } else t.blur();
+  }
+
+  root.addEventListener('click', (e) => {
+    const t = e.target.closest('button');
+    if (!t || !root.contains(t)) return;
+    if (t.dataset.tab) { setTab(t.dataset.tab); return; }
+    if (t.dataset.quick) { const inp = $('#tv-new-title'); inp.value = t.dataset.quick + ' '; inp.focus(); return; }
+    const act = t.dataset.act;
+    const id = t.dataset.id;
+    const s = store.get();
+    switch (act) {
+      case 'new': createBoard(); break;
+      case 'select': sel = id; renderBoards(s, {}); break;
+      case 'show': store.toggleShow(id); break;
+      case 'mark': if (sel) store.markDone(sel, id, 'teacher'); break;
+      case 'unmark': if (sel) store.unmark(sel, id, 'teacher'); break;
+      case 'reset':
+        confirmBox('이 판의 완료 표시를 모두 지우고 처음부터 다시 할까요?', '모두 지우기').then((ok) => { if (ok && sel) store.resetBoard(sel); });
+        break;
+      case 'archive':
+        if (sel) { store.archiveBoard(sel, true); flash('보관함으로 옮겼어요. 보관함에서 다시 되살릴 수 있어요.'); }
+        break;
+      case 'restore': store.archiveBoard(id, false); pendingSel = id; flash('판을 되살렸어요.'); break;
+      case 'delete':
+        confirmBox('이 판을 완전히 지울까요? 지운 판은 되살릴 수 없어요.', '지우기').then((ok) => { if (ok) store.deleteBoard(id); });
+        break;
+      case 'add-one': addOne(); break;
+      case 'del-student': {
+        const x = s.students.find((y) => y.id === id);
+        if (!x) break;
+        confirmBox(x.no + '번 ' + x.name + ' 학생을 명단에서 뺄까요? 모든 판에서 이 학생의 기록도 함께 지워져요.', '빼기').then((ok) => { if (ok) store.removeStudent(id); });
+        break;
+      }
+      case 'renumber':
+        confirmBox('지금 순서대로 번호를 1번부터 다시 매길까요?', '다시 매기기').then((ok) => { if (ok) store.renumber(); });
+        break;
+      case 'bulk-add': {
+        const list = parseRoster($('#tv-bulk').value);
+        if (!list.length) { note('#tv-bulk-msg', '붙여넣은 이름이 없어요.', true); break; }
+        store.addStudents(list);
+        $('#tv-bulk').value = '';
+        $('#tv-bulk-preview').textContent = '';
+        note('#tv-bulk-msg', list.length + '명을 추가했어요.');
+        break;
+      }
+      case 'bulk-replace': {
+        const list = parseRoster($('#tv-bulk').value);
+        if (!list.length) { note('#tv-bulk-msg', '붙여넣은 이름이 없어요.', true); break; }
+        confirmBox('지금 명단 ' + s.students.length + '명을 새 명단 ' + list.length + '명으로 바꿀까요? 모든 판의 완료 기록이 지워져요.', '명단 바꾸기').then((ok) => {
+          if (!ok) return;
+          store.replaceStudents(list);
+          $('#tv-bulk').value = '';
+          $('#tv-bulk-preview').textContent = '';
+          note('#tv-bulk-msg', list.length + '명으로 명단을 바꿨어요.');
+        });
+        break;
+      }
+      case 'save-pin': savePin(); break;
+      case 'sound': store.setSetting('sound', t.dataset.v === '1'); break;
+      case 'self-cancel': store.setSetting('selfCancel', t.dataset.v === '1'); break;
+      case 'praise': store.setSetting('praise', t.dataset.v === '1'); break;
+      case 'approve': store.approveDevice(id); flash('태블릿을 승인했어요. 곧 그 태블릿에 판이 열려요.'); break;
+      case 'remove-device': {
+        const d = (s.devices || []).find((x) => x.id === id);
+        const label = d && d.code ? d.code + '번 태블릿' : '이 태블릿';
+        const on = !!(d && d.approved);
+        confirmBox(on ? label + '의 연결을 끊을까요? 다시 쓰려면 새로 승인해야 해요.' : label + '의 요청을 거절할까요?', on ? '연결 끊기' : '거절').then((ok) => { if (ok) store.removeDevice(id); });
+        break;
+      }
+      case 'reload-tablets': store.reloadTablets(); note('#tv-reload-msg', '연결된 태블릿에 새로고침을 보냈어요.'); break;
+      case 'reload-self': location.reload(); break;
+      case 'logout': ctx.logout(); break;
+      default: break;
+    }
+  });
+
+  root.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (composing(e)) return;
+    if (t.id === 'tv-new-title' && e.key === 'Enter') { e.preventDefault(); createBoard(); }
+    else if (t.id === 'tv-add-name' && e.key === 'Enter') { e.preventDefault(); addOne(); }
+    else if (t.id === 'tv-pin' && e.key === 'Enter') { e.preventDefault(); savePin(); }
+    else if (t.classList.contains('dt-title')) {
+      if (e.key === 'Enter') { e.preventDefault(); t.blur(); }
+      else if (e.key === 'Escape') { const b = store.get().boards.find((x) => x.id === t.dataset.id); if (b) t.value = b.title; t.blur(); }
+    } else if (t.matches('.roster .in') && e.key === 'Enter') { e.preventDefault(); moveNext(t); }
+  });
+
+  root.addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.matches('.roster .in')) {
+      const x = store.get().students.find((y) => y.id === t.dataset.id);
+      if (!x) return;
+      if (t.dataset.field === 'name') {
+        const v = t.value.trim().replace(/\s+/g, ' ').slice(0, 20);
+        if (!v) { t.value = x.name; return; }
+        if (v !== x.name) store.updateStudent(x.id, { name: v });
+      } else {
+        const n = parseInt(t.value, 10);
+        if (!(n >= 1 && n <= 99)) { t.value = x.no; return; }
+        if (n !== x.no) store.updateStudent(x.id, { no: n });
+      }
+    } else if (t.classList.contains('dt-title')) {
+      const b = store.get().boards.find((x) => x.id === t.dataset.id);
+      if (!b) return;
+      const v = t.value.trim().replace(/\s+/g, ' ').slice(0, 40);
+      if (!v) { t.value = b.title; return; }
+      if (v !== b.title) store.renameBoard(b.id, v);
+    }
+  });
+
+  $('#tv-bulk').addEventListener('input', () => {
+    const list = parseRoster($('#tv-bulk').value);
+    $('#tv-bulk-preview').textContent = list.length
+      ? list.length + '명을 알아봤어요: ' + list.slice(0, 6).map((x) => (x.no ? x.no + ' ' : '') + x.name).join(', ') + (list.length > 6 ? ' …' : '')
+      : '';
+  });
+
+  /* 입력 중에는 목록을 다시 그리지 않고, 입력이 끝나면 한 번에 반영합니다 */
+  tbody.addEventListener('focusin', () => { rosterEditing = true; });
+  tbody.addEventListener('focusout', () => {
+    setTimeout(() => {
+      if (tbody.contains(document.activeElement)) return;
+      rosterEditing = false;
+      if (rosterPending) renderRoster(store.get());
+    }, 0);
+  });
+  detailEl.addEventListener('focusin', (e) => { if (e.target.classList.contains('dt-title')) titleEditing = true; });
+  detailEl.addEventListener('focusout', (e) => {
+    if (!e.target.classList.contains('dt-title')) return;
+    setTimeout(() => {
+      const a = document.activeElement;
+      if (a && a.classList && a.classList.contains('dt-title')) return;
+      titleEditing = false;
+      renderDetail(store.get(), {});
+    }, 0);
+  });
+
+  $('#tv-email').textContent = ctx.email || '';
+  store.subscribe(render);
+  setInterval(() => { const s = store.get(); if (s) renderDevices(s); }, 60000);   /* '몇 분 전' 표시를 새로 고칩니다 */
+  return {
+    flash,
+    setNet(on) {
+      const el = $('#tv-net');
+      el.textContent = on ? '실시간 연결됨' : '연결 끊김, 다시 연결되면 저장돼요';
+      el.classList.toggle('on', !!on);
+    },
+    showUpdate() { $('#tv-update').hidden = false; }
+  };
+}
+
+
+/* ======================================================
+   시작: 주소에 ?teacher 가 있으면 교사 화면, 없으면 태블릿 화면
+   ====================================================== */
+const appRoot = document.getElementById('app');
+document.body.classList.add(MODE === 'teacher' ? 'mode-teacher' : 'mode-board');
+
+function authReady() {
+  return new Promise((resolve) => { const un = onAuthStateChanged(auth, (u) => { un(); resolve(u); }); });
+}
+function watchNet(cb) {
+  const f = () => cb(navigator.onLine !== false);
+  window.addEventListener('online', f);
+  window.addEventListener('offline', f);
+  f();
+}
+/* 새 화면 파일이 올라왔는지 몇 분마다 확인합니다 */
+function startVersionWatch(onNew) {
+  let told = false;
+  async function check() {
+    if (told || document.visibilityState === 'hidden') return false;
+    try {
+      const res = await fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) return false;
+      const m = (await res.text()).match(/APP_VERSION = '(\d{4}-\d{2}-\d{2}-\d+)'/);
+      if (m && m[1] !== APP_VERSION) { told = true; onNew(m[1]); return true; }
+    } catch (e) { /* 인터넷이 끊겼으면 다음에 다시 봅니다 */ }
+    return false;
+  }
+  setTimeout(check, 2 * 60 * 1000);
+  setInterval(check, 10 * 60 * 1000);
+  return check;
+}
+window.__dhs = { version: APP_VERSION };   /* 점검용 */
+
+/* ---------------- 교사 화면 ---------------- */
+async function bootTeacher() {
+  document.title = '다했어요판 교사 화면';
+  const page = document.createElement('div');
+  page.className = 'teacher-page';
+  appRoot.replaceChildren(page);
+  const screen = (html) => { page.innerHTML = '<div class="screen"><div class="card-box">' + html + '</div></div>'; };
+  let view = null, store = null, netOn = true;
+
+  function loginScreen(msg) {
+    screen('<h1>다했어요판 교사 화면</h1><p>' + esc(msg || '선생님 구글 계정으로 로그인해 주세요.') + '</p>' +
+      '<button type="button" class="btn primary" id="login">구글 계정으로 로그인</button>' +
+      '<p class="fine">태블릿에서는 이 주소에서 ?teacher 를 뺀 주소를 열어요.</p>');
+    page.querySelector('#login').addEventListener('click', async () => {
+      try { await signInWithPopup(auth, new GoogleAuthProvider()); open(); }
+      catch (err) { loginScreen(describeError(err)); }
+    });
+  }
+  async function logout() {
+    if (store) store.stop();
+    store = null; view = null;
+    await signOut(auth);
+    loginScreen('로그아웃했어요.');
+  }
+  async function open() {
+    const u = auth.currentUser;
+    if (!u || u.isAnonymous) { loginScreen(); return; }
+    screen('<div class="spinner"></div><p>기록장을 여는 중이에요…</p>');
+    try {
+      /* 처음 쓰는 기록장이면 기본 설정과 빈 명단을 만들어 둡니다 */
+      const s = await getDoc(R.settings());
+      if (!s.exists()) await setDoc(R.settings(), DEFAULT_SETTINGS);
+      const r = await getDoc(R.roster());
+      if (!r.exists()) await setDoc(R.roster(), { items: [], updatedAt: Date.now() });
+    } catch (err) {
+      if (err && err.code === 'permission-denied') {
+        screen('<h1>선생님 계정이 아니에요</h1><p>' + esc(u.email || '이 계정') + '은(는) 다했어요판 선생님 계정으로 등록되어 있지 않아요. 등록한 구글 계정으로 다시 로그인해 주세요.</p>' +
+          '<button type="button" class="btn primary" id="relogin">다른 계정으로 로그인</button>');
+        page.querySelector('#relogin').addEventListener('click', async () => { await signOut(auth); loginScreen(); });
+      } else {
+        screen('<h1>기록장을 열지 못했어요</h1><p>' + esc(describeError(err)) + '</p><button type="button" class="btn primary" id="retry">다시 시도</button>');
+        page.querySelector('#retry').addEventListener('click', open);
+      }
+      return;
+    }
+    store = createCloudStore('teacher', {
+      onListenError: (err) => { if (view) view.flash('기록을 불러오지 못했어요. ' + describeError(err)); },
+      onWriteError: (err) => { if (view) view.flash('저장하지 못했어요. ' + describeError(err)); }
+    });
+    await store.start();
+    page.innerHTML = '<div class="tv" id="teacher"></div>';
+    view = TeacherView(page.querySelector('#teacher'), store, { email: u.email, logout });
+    view.setNet(netOn);
+  }
+
+  watchNet((on) => { netOn = on; if (view) view.setNet(on); });
+  window.__dhs.checkVersion = startVersionWatch(() => { if (view) view.showUpdate(); });
+  screen('<div class="spinner"></div><p>연결하는 중이에요…</p>');
+  await authReady();
+  open();
+}
+
+/* ---------------- 태블릿 화면 ---------------- */
+async function bootBoard() {
+  let view = null, store = null, deviceCode = '', unsubDevice = null, beat = null;
+  let netOn = true, pendingUpdate = false, lastTouch = Date.now();
+  const unitOf = (el) => { const w = el.clientWidth, h = el.clientHeight; if (w && h) el.style.setProperty('--u', (Math.min(w, h * 1.4) / 100).toFixed(2) + 'px'); };
+
+  function shell(html) {
+    stopBoard();
+    const el = document.createElement('div');
+    el.className = 'board';
+    el.innerHTML = html;
+    appRoot.replaceChildren(el);
+    unitOf(el);
+  }
+  window.addEventListener('resize', () => { const el = appRoot.firstElementChild; if (el && !view) unitOf(el); });
+  const waitHTML = (label, big, help, small) => '<div class="wait"><div class="wait-label">' + label + '</div>' +
+    (big ? '<div class="wait-code">' + esc(big) + '</div>' : '') +
+    (help ? '<div class="wait-help">' + help + '</div>' : '') + (small ? '<div class="wait-small">' + small + '</div>' : '') + '</div>';
+  const showWaiting = (code) => shell(waitHTML('이 태블릿의 번호', code,
+    '선생님 PC의 교사 화면에서 <b>태블릿 설정</b>을 열고 이 번호를 승인해 주세요.', '승인되면 다했어요판이 저절로 열려요.'));
+  const showError = (err) => {
+    shell(waitHTML('연결하지 못했어요', '', esc(describeError(err)), '30초 뒤에 저절로 다시 시도해요.'));
+    setTimeout(() => location.reload(), 30000);
+  };
+
+  function stopBoard() {
+    if (view) { view.destroy(); view = null; }
+    if (store) { store.stop(); store = null; }
+    if (beat) { clearInterval(beat); beat = null; }
+  }
+
+  async function startBoard(isTeacherUser) {
+    if (view || store) return;
+    const s = createCloudStore('board', {
+      onListenError: (err) => {
+        if (err && err.code === 'permission-denied') {
+          if (isTeacherUser) showOtherAccount();   /* 승인 취소는 기기 문서 감시에서 따로 처리합니다 */
+        } else if (view) view.say('기록을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.');
+      },
+      onWriteError: () => { if (view) view.say('기록하지 못했어요. 선생님께 말해요.'); }
+    });
+    store = s;
+    await s.start();
+    if (store !== s) return;   /* 기다리는 사이 승인이 취소된 경우 */
+    const el = document.createElement('div');
+    el.className = 'board';
+    appRoot.replaceChildren(el);
+    view = BoardView(el, s, { deviceText: () => (isTeacherUser ? '선생님 계정으로 열려 있어요' : '번호 ' + deviceCode + ', 승인됨') });
+    view.setNet(netOn ? '' : '인터넷 연결이 끊겼어요. 누른 기록은 연결되면 보내져요.');
+    /* 선생님이 '태블릿 새로고침'을 누르면 다시 불러옵니다 */
+    let base = null;
+    s.subscribe((st) => {
+      const seq = Number(st.settings.reloadSeq) || 0;
+      if (base === null) base = seq;
+      else if (seq > base) location.reload();
+    });
+  }
+
+  function showOtherAccount() {
+    shell(waitHTML('이 기기는 다른 구글 계정으로 로그인되어 있어요', '', '태블릿으로 쓰려면 아래 단추를 눌러 주세요.',
+      '<button type="button" class="pill" id="as-tablet" style="margin-top:8px">이 기기를 태블릿으로 쓰기</button>'));
+    const btn = document.getElementById('as-tablet');
+    if (btn) btn.addEventListener('click', async () => { await signOut(auth); location.reload(); });
+  }
+
+  function watchDevice(uid) {
+    const ref = R.device(uid);
+    unsubDevice = onSnapshot(ref, async (snap) => {
+      if (!snap.exists()) {
+        if (snap.metadata.fromCache) { if (!view) shell(waitHTML('연결하는 중이에요…')); return; }
+        stopBoard();
+        deviceCode = String(1000 + Math.floor(Math.random() * 9000));
+        showWaiting(deviceCode);
+        try { await setDoc(ref, { code: deviceCode, approved: false, createdAt: Date.now(), lastSeen: Date.now(), agent: deviceKind() }); }
+        catch (err) { showError(err); }
+        return;
+      }
+      const d = snap.data();
+      deviceCode = d.code || deviceCode;
+      if (!d.approved) { if (view || store || !document.querySelector('.wait-code')) showWaiting(deviceCode); return; }
+      if (!view && !store) {
+        await startBoard(false);
+        const ping = () => { if (document.visibilityState !== 'hidden') updateDoc(ref, { lastSeen: Date.now() }).catch(() => {}); };
+        ping();
+        if (beat) clearInterval(beat);
+        beat = setInterval(ping, 10 * 60 * 1000);
+      }
+    }, (err) => showError(err));
+  }
+
+  /* 새 버전은 아무도 누르지 않을 때 다시 불러옵니다 */
+  document.addEventListener('pointerdown', () => { lastTouch = Date.now(); }, true);
+  function tryUpdate() {
+    if (!pendingUpdate) return;
+    if (Date.now() - lastTouch > 60000 && !(view && view.menuOpen())) location.reload();
+    else setTimeout(tryUpdate, 20000);
+  }
+  window.__dhs.checkVersion = startVersionWatch(() => { pendingUpdate = true; tryUpdate(); });
+  window.__dhs.forceIdle = () => { lastTouch = 0; tryUpdate(); };
+  watchNet((on) => { netOn = on; if (view) view.setNet(on ? '' : '인터넷 연결이 끊겼어요. 누른 기록은 연결되면 보내져요.'); });
+
+  shell(waitHTML('연결하는 중이에요…'));
+  let user = await authReady();
+  if (!user) {
+    try { user = (await signInAnonymously(auth)).user; }
+    catch (err) { showError(err); return; }
+  }
+  if (user.isAnonymous) watchDevice(user.uid);
+  else startBoard(true);   /* 선생님 계정으로 로그인된 PC에서는 승인 없이 바로 엽니다 */
+}
+
+if (MODE === 'teacher') bootTeacher(); else bootBoard();
+</script>
+</body>
+</html>
