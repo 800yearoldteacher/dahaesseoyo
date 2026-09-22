@@ -224,7 +224,7 @@ button{cursor:pointer}
 .dup{color:var(--danger);font-size:12px}
 .bulk{margin-top:18px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2)}
 .bulk summary{cursor:pointer;font-weight:500}
-.bulk textarea{width:100%;min-height:140px;margin-top:10px;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel);line-height:1.5;resize:vertical}
+.bulk textarea{box-sizing:border-box;width:100%;min-height:140px;margin-top:10px;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel);line-height:1.5;resize:vertical}
 .msg{color:var(--text-2);font-size:13px}
 .msg.err{color:var(--danger)}
 .set{padding:14px 0;border-bottom:1px solid var(--line)}
@@ -287,6 +287,62 @@ button{cursor:pointer}
 .update{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:0 0 12px;padding:9px 12px;border:1px solid var(--accent);border-radius:10px;font-size:14px}
 .update[hidden]{display:none}
 .ver{margin:10px 0 0;color:var(--text-3);font-size:12.5px}
+
+/* ---------- 판별 명단, 매일 반복, 기록 달력 ---------- */
+.col-empty{grid-column:1 / -1;align-self:center;color:var(--chalk-2);font-size:calc(var(--title-size,30px) * .7);text-align:center}
+.tag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:600;line-height:18px;vertical-align:2px}
+.dt-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+.dtabs{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2)}
+.dtabs button{padding:6px 12px;border:0;border-radius:7px;background:transparent;color:var(--text-2);font-size:14px;white-space:nowrap}
+.dtabs button[aria-selected="true"]{background:var(--panel);color:var(--text);font-weight:600;box-shadow:0 0 0 1px var(--line-2)}
+.daily{display:flex;align-items:center;gap:8px;color:var(--text-2);font-size:14px}
+.opts.sm button{padding:4px 12px;font-size:13px}
+.dt-panel{min-height:40px}
+.m-mode{margin-bottom:8px}
+.chip .x{margin:0 -4px 0 2px;padding:0 4px;border:0;background:transparent;color:var(--text-3);font-size:17px;line-height:1}
+.chip .x:hover{color:var(--danger)}
+.extra{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line)}
+.extra h4{display:flex;align-items:center;gap:8px;margin:0 0 2px;font-size:14.5px;font-weight:600}
+.miss p{margin:10px 0 6px;color:var(--text-2);font-size:13.5px}
+.hist-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.hist-head strong{min-width:7.5em;font-size:15px;text-align:center}
+.hist-head .opts{margin-left:auto}
+.hist-note{margin:0 0 8px;color:var(--text-2);font-size:13.5px}
+.hist-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.hist{border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.hist th,.hist td{padding:0;border-bottom:1px solid var(--line);text-align:center}
+.hist thead th{min-width:26px;padding:5px 0;background:var(--panel);color:var(--text-2);font-weight:500}
+.hist thead th small{display:block;color:var(--text-3);font-size:10.5px}
+.hist .we{background:var(--panel-2)}
+.hist thead th.today{color:var(--text);font-weight:700;box-shadow:inset 0 -3px 0 var(--accent)}
+.hist th.nm{position:sticky;left:0;z-index:1;padding:4px 10px;background:var(--panel);color:var(--text);font-weight:500;text-align:left;white-space:nowrap}
+.hist th.nm b{margin-right:5px;color:var(--text-2);font-weight:600}
+.hist .sum{padding:0 10px;font-weight:600}
+.hc{display:grid;place-items:center;width:22px;height:22px;margin:3px auto;padding:0;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--done-ink);font-size:12px;line-height:1}
+.hc.on{background:var(--done);border-color:var(--done)}
+.hc.on::after{content:"✓"}
+.hc.miss{border-color:rgba(214,40,57,.55)}
+.hc.miss::after{content:"·";color:var(--stamp);font-size:15px}
+.hc:disabled{cursor:default}
+.hc:not(:disabled):hover{border-color:var(--accent)}
+.hist-who{margin-bottom:12px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;max-width:440px}
+.cal .wd{color:var(--text-3);font-size:12.5px;text-align:center}
+.cd{position:relative;aspect-ratio:1;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.cd span{position:absolute;top:5px;left:7px;color:var(--text-2);font-size:13px}
+.cd.we{background:var(--panel-2)}
+.cd.on{background:var(--done);border-color:var(--done)}
+.cd.on span{color:var(--done-ink);font-weight:600}
+.cd.on::after{content:"✓";position:absolute;right:7px;bottom:4px;color:var(--done-ink);font-size:16px}
+.cd.miss{border-color:rgba(214,40,57,.6)}
+.cd.miss::after{content:"안 함";position:absolute;right:6px;bottom:5px;color:var(--stamp);font-size:10.5px}
+.cd.today{box-shadow:0 0 0 2px var(--accent)}
+.cd:disabled{opacity:.45;cursor:default}
+.cal-sum{margin:12px 0 0;font-size:14px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 0;color:var(--text-2);font-size:12.5px}
+.legend i{display:inline-block;width:12px;height:12px;margin-right:5px;border:1px solid var(--line-2);border-radius:3px;vertical-align:-1px}
+.legend .l-on{background:var(--done);border-color:var(--done)}
+.legend .l-miss{border-color:rgba(214,40,57,.6)}
 </style>
 </head>
 <body>
@@ -305,10 +361,10 @@ button{cursor:pointer}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInAnonymously, signInWithPopup, GoogleAuthProvider, signOut } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
-import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc, getDoc, writeBatch, deleteField, FieldPath, increment } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc, getDoc, getDocs, writeBatch, deleteField, FieldPath, increment, query, where, documentId } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
 /* ---------- 기본값 ---------- */
-const APP_VERSION = '2026-09-22-1';   /* 파일을 고칠 때마다 이 번호를 바꾸면 태블릿이 새 버전을 알아챕니다 */
+const APP_VERSION = '2026-09-22-2';   /* 파일을 고칠 때마다 이 번호를 바꾸면 태블릿이 새 버전을 알아챕니다 */
 const FIREBASE_CONFIG = {
   apiKey: 'AIzaSyA7ZaFEC2JU4bNL8u35ESciXPPMHkXtLkk',
   authDomain: 'dahaesseoyo-board.firebaseapp.com',
@@ -320,7 +376,7 @@ const FIREBASE_CONFIG = {
 const MODE = (new URLSearchParams(location.search).has('teacher') || location.hash === '#teacher') ? 'teacher' : 'board';
 const PER_PAGE_WIDE = 3;   /* 가로 화면에서 한 번에 보이는 판 수 (세로 화면은 1개) */
 const GUARD_MS = 1000;     /* 빠르게 두 번 눌러 곧바로 취소되는 일을 막는 시간 */
-const DEFAULT_SETTINGS = { pin: '1234', sound: true, selfCancel: true, praise: true, reloadSeq: 0 };
+const DEFAULT_SETTINGS = { pin: '1234', sound: true, selfCancel: true, reloadSeq: 0 };
 const QUICK = ['수학 익힘책', '국어 활동', '받아쓰기', '알림장 쓰기', '독서록'];
 const HEADER_WORDS = new Set(['이름', '성명', '학생', '학생명', '번호']);
 const GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37c1 .608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -328,8 +384,62 @@ const GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 const rid = (p) => p + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
-const doneCount = (b, s) => s.students.reduce((n, x) => n + (b.done[x.id] ? 1 : 0), 0);
 const composing = (e) => e.isComposing || e.keyCode === 229;
+
+/* 날짜 (기기 시간 기준, 예: 2026-09-22) */
+const pad2 = (n) => (n < 10 ? '0' : '') + n;
+const dayKeyOf = (d) => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+const todayKey = () => window.__DHS_TODAY || dayKeyOf(new Date());
+const dayWatchers = new Set();
+const WEEK = '일월화수목금토';
+
+/* 이 판의 학생: 반 전체이거나, 고른 학생과 이 판에만 있는 학생 */
+function membersOf(b, s) {
+  if (!b.roster) return s.students;
+  const ids = new Set(b.roster.ids);
+  const extra = b.roster.extra.map((x) => ({ id: String(x.id), no: Number(x.no) || 0, name: String(x.name), extra: true }));
+  return s.students.filter((x) => ids.has(x.id)).concat(extra).sort((a, c) => (a.no - c.no) || a.name.localeCompare(c.name, 'ko'));
+}
+const doneCount = (b, list) => list.reduce((n, x) => n + (b.done[x.id] ? 1 : 0), 0);
+
+/* 판 명단을 고를 때 붙여넣은 글 읽기: '3', '3번', '3 도윤', '김도윤', 엑셀 두 칸 */
+function parsePick(text) {
+  const out = [];
+  text.split(/\r?\n|,/).forEach((line) => {
+    const raw = line.trim();
+    if (!raw) return;
+    const cells = raw.split('\t').map((c) => c.trim()).filter(Boolean);
+    let no = null, name = '';
+    if (cells.length > 1) {
+      if (/^\d{1,3}$/.test(cells[0])) { no = +cells[0]; name = cells[1]; } else { name = cells[0]; }
+    } else {
+      const m = raw.match(/^(\d{1,3})\s*(?:번|\.|\))?\s*(.*)$/);
+      if (m) { no = +m[1]; name = m[2]; } else { name = raw; }
+    }
+    name = name.replace(/\s+/g, ' ').trim().slice(0, 20);
+    if (HEADER_WORDS.has(name)) return;
+    if (no || name) out.push({ no: no && no > 0 && no < 100 ? no : null, name });
+  });
+  return out;
+}
+/* 반 명단에서 같은 학생 찾기 (성이 붙은 이름도 찾습니다) */
+function matchPick(entries, students) {
+  const ids = [], miss = [];
+  const byName = (n, no) => students.find((x) => x.name === n && (!no || x.no === no)) || students.find((x) => x.name === n);
+  entries.forEach((e) => {
+    let hit = null;
+    if (e.name) {
+      hit = byName(e.name, e.no);
+      if (!hit && e.name.length >= 3) hit = byName(e.name.slice(1), e.no);
+      if (!hit && e.name.length >= 4) hit = byName(e.name.slice(2), e.no);
+    } else if (e.no) {
+      hit = students.find((x) => x.no === e.no);
+    }
+    if (hit) { if (!ids.includes(hit.id)) ids.push(hit.id); } else miss.push(e);
+  });
+  return { ids, miss };
+}
+
 
 function deviceKind() {
   const ua = navigator.userAgent || '';
@@ -366,15 +476,6 @@ function describeError(err) {
   };
   return map[code] || ('알 수 없는 문제가 생겼어요' + (code ? ' (' + code + ')' : '') + '.');
 }
-
-/* 이름 뒤에 '아/야'를 붙여 부르는 말로 만듭니다 (민준아, 지우야) */
-function callName(name) {
-  const t = name.trim();
-  const c = t.charCodeAt(t.length - 1);
-  if (c >= 0xac00 && c <= 0xd7a3) return t + ((c - 0xac00) % 28 ? '아' : '야');
-  return t;
-}
-
 
 /* 붙여넣은 명단 읽기: '1 민준', '1번 민준', '1. 민준', 엑셀 두 칸(번호, 이름), 이름만 */
 function parseRoster(text) {
@@ -493,7 +594,9 @@ const R = {
   boards: () => collection(db, 'boards'),
   board: (id) => doc(db, 'boards', id),
   devices: () => collection(db, 'devices'),
-  device: (uid) => doc(db, 'devices', uid)
+  device: (uid) => doc(db, 'devices', uid),
+  days: (bid) => collection(db, 'boards', bid, 'days'),
+  day: (bid, key) => doc(db, 'boards', bid, 'days', key)
 };
 
 /* ---------- 저장소 ----------
@@ -502,28 +605,76 @@ function createCloudStore(role, handlers) {
   handlers = handlers || {};
   const subs = new Set();
   const parts = { settings: undefined, roster: undefined, boards: undefined, devices: role === 'teacher' ? undefined : [] };
-  let state = null, unsubs = [], resolveReady;
+  const days = new Map();   /* 매일 반복 판: 판 id → 오늘 날짜 기록 { key, data, unsub } */
+  let state = null, unsubs = [], resolveReady, dayKey = todayKey(), dayTimer = null;
   const readyP = new Promise((r) => { resolveReady = r; });
   const fail = (err) => { if (handlers.onListenError) handlers.onListenError(err); };
   const act = (p) => Promise.resolve(p).catch((err) => { if (handlers.onWriteError) handlers.onWriteError(err); });
 
+  /* 완료·취소 한 건이 다른 기기에서 들어왔는지 알아냅니다 (교사 화면에서 이름을 잠깐 표시) */
+  function diffMeta(bid, bd, ad, local) {
+    const added = Object.keys(ad).filter((k) => ad[k] && !bd[k]);
+    const removed = Object.keys(bd).filter((k) => bd[k] && !ad[k]);
+    const by = local ? 'local' : 'tablet';
+    if (added.length === 1 && !removed.length) return { type: 'done', bid, sid: added[0], by };
+    if (removed.length === 1 && !added.length) return { type: 'undo', bid, sid: removed[0], by };
+    return null;
+  }
+
   function compose(meta) {
     if (parts.settings === undefined || parts.roster === undefined || parts.boards === undefined || parts.devices === undefined) return;
+    if (!state) { for (const d of days.values()) if (d.data === undefined) return; }   /* 첫 화면은 오늘 기록까지 받은 뒤 그립니다 */
     const items = parts.roster && Array.isArray(parts.roster.items) ? parts.roster.items : [];
     const students = items.filter((x) => x && x.id && x.name).map((x) => ({ id: String(x.id), no: Number(x.no) || 0, name: String(x.name) }));
     students.sort((a, b) => (a.no - b.no) || a.name.localeCompare(b.name, 'ko'));
-    const boards = parts.boards.map((b) => ({
-      id: b.id, title: String(b.title || ''), createdAt: Number(b.createdAt) || 0,
-      archived: !!b.archived, shown: !!b.shown, done: b.done && typeof b.done === 'object' ? b.done : {}
-    }));
+    const boards = parts.boards.map((b) => {
+      const daily = !!b.daily;
+      const d = daily ? days.get(b.id) : null;
+      const done = daily ? ((d && d.data && d.data.done) || {}) : (b.done && typeof b.done === 'object' ? b.done : {});
+      const roster = b.roster && typeof b.roster === 'object' ? {
+        ids: Array.isArray(b.roster.ids) ? b.roster.ids.map(String) : [],
+        extra: Array.isArray(b.roster.extra) ? b.roster.extra.filter((x) => x && x.id && x.name) : []
+      } : null;
+      return { id: b.id, title: String(b.title || ''), createdAt: Number(b.createdAt) || 0, archived: !!b.archived, shown: !!b.shown, daily, roster, done };
+    });
     boards.sort((a, b) => b.createdAt - a.createdAt);
     const show = boards.filter((b) => b.shown && !b.archived).map((b) => b.id);
     const settings = Object.assign({}, DEFAULT_SETTINGS, parts.settings || {});
     const first = !state;
-    state = { students, boards, show, settings, devices: parts.devices };
+    state = { students, boards, show, settings, devices: parts.devices, today: dayKey };
     const m = first ? { initial: true } : (meta || {});
     subs.forEach((cb) => cb(state, m));
     if (first) resolveReady(state);
+  }
+
+  /* 매일 반복 판마다 '오늘 날짜' 기록을 지켜봅니다 */
+  function syncDays() {
+    const want = new Set((parts.boards || []).filter((b) => b.daily && !b.archived).map((b) => b.id));
+    days.forEach((d, bid) => { if (!want.has(bid) || d.key !== dayKey) { d.unsub(); days.delete(bid); } });
+    want.forEach((bid) => {
+      if (days.has(bid)) return;
+      const entry = { key: dayKey, data: undefined, unsub: () => {} };
+      days.set(bid, entry);
+      entry.unsub = onSnapshot(R.day(bid, dayKey), (snap) => {
+        const before = entry.data;
+        entry.data = snap.exists() ? snap.data() : null;
+        const meta = before === undefined ? null : diffMeta(bid, (before && before.done) || {}, (entry.data && entry.data.done) || {}, snap.metadata.hasPendingWrites);
+        compose(meta || { type: 'day' });
+      }, (err) => {
+        /* 읽지 못해도 화면이 멈추지 않도록 빈 기록으로 두고 알립니다 (보안 규칙을 새로 게시하지 않은 경우 등) */
+        if (entry.data === undefined) entry.data = null;
+        compose({ type: 'day' });
+        fail({ code: err && err.code, message: err && err.message, scope: 'day' });
+      });
+    });
+  }
+  /* 자정이 지나면 새 날짜의 빈 판으로 바뀝니다 */
+  function checkDay() {
+    const k = todayKey();
+    if (k === dayKey) return;
+    dayKey = k;
+    syncDays();
+    compose({ type: 'newday' });
   }
 
   function start() {
@@ -534,34 +685,39 @@ function createCloudStore(role, handlers) {
       const next = qs.docs.map((d) => Object.assign({ id: d.id }, d.data()));
       let meta = { type: 'boards' };
       if (prev) {
-        /* 다른 기기에서 한 명의 완료·취소가 들어오면 교사 화면에서 그 이름을 잠깐 표시합니다 */
         qs.docChanges().forEach((ch) => {
           if (ch.type !== 'modified') return;
           const before = prev.find((x) => x.id === ch.doc.id);
-          if (!before) return;
-          const bd = before.done || {}, ad = ch.doc.data().done || {};
-          const added = Object.keys(ad).filter((k) => ad[k] && !bd[k]);
-          const removed = Object.keys(bd).filter((k) => bd[k] && !ad[k]);
-          const by = ch.doc.metadata.hasPendingWrites ? 'local' : 'tablet';
-          if (added.length === 1 && !removed.length) meta = { type: 'done', bid: ch.doc.id, sid: added[0], by };
-          else if (removed.length === 1 && !added.length) meta = { type: 'undo', bid: ch.doc.id, sid: removed[0], by };
+          if (!before || before.daily) return;
+          const m = diffMeta(ch.doc.id, before.done || {}, ch.doc.data().done || {}, ch.doc.metadata.hasPendingWrites);
+          if (m) meta = m;
         });
       }
       parts.boards = next;
+      syncDays();
       compose(meta);
     }, fail));
     if (role === 'teacher') {
       unsubs.push(onSnapshot(R.devices(), (qs) => { parts.devices = qs.docs.map((d) => Object.assign({ id: d.id }, d.data())); compose({ type: 'devices' }); }, fail));
     }
+    dayTimer = setInterval(checkDay, 30000);
+    document.addEventListener('visibilitychange', checkDay);
+    dayWatchers.add(checkDay);
     return readyP;
   }
   function stop() {
     unsubs.forEach((u) => { try { u(); } catch (e) { /* 무시 */ } });
     unsubs = [];
+    days.forEach((d) => { try { d.unsub(); } catch (e) { /* 무시 */ } });
+    days.clear();
+    clearInterval(dayTimer);
+    document.removeEventListener('visibilitychange', checkDay);
+    dayWatchers.delete(checkDay);
     subs.clear();
   }
 
-  const cur = () => state || { students: [], boards: [], show: [], settings: Object.assign({}, DEFAULT_SETTINGS), devices: [] };
+  const cur = () => state || { students: [], boards: [], show: [], settings: Object.assign({}, DEFAULT_SETTINGS), devices: [], today: dayKey };
+  const boardOf = (id) => cur().boards.find((x) => x.id === id);
   const clean = (list) => list.map((x) => ({ id: x.id, no: x.no, name: x.name }));
   const saveRoster = (items) => act(setDoc(R.roster(), { items: clean(items), updatedAt: Date.now() }));
 
@@ -570,23 +726,76 @@ function createCloudStore(role, handlers) {
     start,
     stop,
     subscribe(cb) { subs.add(cb); if (state) cb(state, { initial: true }); return () => subs.delete(cb); },
-    /* 판 */
-    markDone(bid, sid) { return act(updateDoc(R.board(bid), new FieldPath('done', sid), Date.now())); },
-    unmark(bid, sid) { return act(updateDoc(R.board(bid), new FieldPath('done', sid), deleteField())); },
+    /* 판: 매일 반복 판은 오늘 날짜 기록에, 나머지는 판에 바로 적습니다 */
+    markDone(bid, sid) {
+      const b = boardOf(bid);
+      if (b && b.daily) return act(setDoc(R.day(bid, dayKey), { done: { [sid]: Date.now() } }, { merge: true }));
+      return act(updateDoc(R.board(bid), new FieldPath('done', sid), Date.now()));
+    },
+    unmark(bid, sid) {
+      const b = boardOf(bid);
+      if (b && b.daily) return act(updateDoc(R.day(bid, dayKey), new FieldPath('done', sid), deleteField()));
+      return act(updateDoc(R.board(bid), new FieldPath('done', sid), deleteField()));
+    },
     addBoard(title, show) {
       const ref = doc(R.boards());
-      act(setDoc(ref, { title, createdAt: Date.now(), archived: false, shown: !!show, done: {} }));
+      act(setDoc(ref, { title, createdAt: Date.now(), archived: false, shown: !!show, daily: false, roster: null, done: {} }));
       return ref.id;
     },
     renameBoard(id, title) { act(updateDoc(R.board(id), { title })); },
-    resetBoard(id) { act(updateDoc(R.board(id), { done: {} })); },
+    resetBoard(id) {
+      const b = boardOf(id);
+      if (b && b.daily) act(setDoc(R.day(id, dayKey), { done: {} }));
+      else act(updateDoc(R.board(id), { done: {} }));
+    },
     archiveBoard(id, flag) { act(updateDoc(R.board(id), flag ? { archived: true, shown: false } : { archived: false })); },
-    deleteBoard(id) { act(deleteDoc(R.board(id))); },
+    async deleteBoard(id) {
+      /* 판을 지울 때 날짜별 기록도 함께 지웁니다 */
+      try {
+        const qs = await getDocs(R.days(id));
+        const refs = qs.docs.map((d) => d.ref);
+        for (let i = 0; i < refs.length; i += 400) {
+          const batch = writeBatch(db);
+          refs.slice(i, i + 400).forEach((r) => batch.delete(r));
+          await batch.commit();
+        }
+        await deleteDoc(R.board(id));
+      } catch (err) { if (handlers.onWriteError) handlers.onWriteError(err); }
+    },
     toggleShow(id) {
-      const b = cur().boards.find((x) => x.id === id);
+      const b = boardOf(id);
       if (!b) return 'none';
       act(updateDoc(R.board(id), { shown: !b.shown }));
       return b.shown ? 'hidden' : 'shown';
+    },
+    setDaily(id, flag) {
+      const b = boardOf(id);
+      if (!b || b.daily === flag) return;
+      const batch = writeBatch(db);
+      if (flag) {
+        /* 켜는 순간까지의 오늘 기록은 오늘 날짜 기록으로 옮겨 둡니다 */
+        batch.set(R.day(id, dayKey), { done: Object.assign({}, b.done) }, { merge: true });
+        batch.update(R.board(id), { daily: true, done: {} });
+      } else {
+        batch.update(R.board(id), { daily: false, done: Object.assign({}, b.done) });
+      }
+      act(batch.commit());
+    },
+    setBoardRoster(id, roster) {
+      act(updateDoc(R.board(id), { roster: roster ? { ids: roster.ids.slice(), extra: clean(roster.extra || []) } : null }));
+    },
+    /* 기록 달력: 한 달치 날짜별 기록을 지켜봅니다 */
+    watchMonth(bid, ym, cb) {
+      const q = query(R.days(bid), where(documentId(), '>=', ym + '-01'), where(documentId(), '<=', ym + '-31'));
+      return onSnapshot(q, (qs) => {
+        const map = {};
+        qs.docs.forEach((d) => { const v = d.data(); map[d.id] = (v && v.done) || {}; });
+        cb(map, null);
+      }, (err) => cb(null, err));
+    },
+    setDayMark(bid, key, sid, on) {
+      if (on) act(setDoc(R.day(bid, key), { done: { [sid]: Date.now() } }, { merge: true }));
+      else act(updateDoc(R.day(bid, key), new FieldPath('done', sid), deleteField()));
     },
     /* 명단 */
     addStudents(list) {
@@ -601,24 +810,32 @@ function createCloudStore(role, handlers) {
       saveRoster(items);
     },
     replaceStudents(list) {
+      /* 이름이 같은 학생은 그대로 이어서, 판 명단과 날짜별 기록이 끊기지 않게 합니다 */
+      const old = cur().students;
+      const used = new Set(), nos = new Set();
       let max = list.reduce((m, e) => Math.max(m, e.no || 0), 0);
-      const used = new Set();
       const items = list.map((e) => {
+        const hit = old.find((o) => !used.has(o.id) && o.name === e.name && (!e.no || o.no === e.no)) || old.find((o) => !used.has(o.id) && o.name === e.name);
+        if (hit) used.add(hit.id);
         let no = e.no;
-        if (!no || used.has(no)) no = ++max;
-        used.add(no);
-        return { id: rid('s'), no, name: e.name };
+        if (!no || nos.has(no)) no = ++max;
+        nos.add(no);
+        return { id: hit ? hit.id : rid('s'), no, name: e.name };
       });
+      const gone = old.filter((o) => !used.has(o.id)).map((o) => o.id);
       const batch = writeBatch(db);
       batch.set(R.roster(), { items: clean(items), updatedAt: Date.now() });
-      cur().boards.forEach((b) => { if (Object.keys(b.done).length) batch.update(R.board(b.id), { done: {} }); });
+      cur().boards.forEach((b) => {
+        if (b.daily) return;
+        gone.forEach((sid) => { if (b.done[sid]) batch.update(R.board(b.id), new FieldPath('done', sid), deleteField()); });
+      });
       act(batch.commit());
     },
     updateStudent(id, patch) { saveRoster(cur().students.map((x) => (x.id === id ? Object.assign({}, x, patch) : x))); },
     removeStudent(id) {
       const batch = writeBatch(db);
       batch.set(R.roster(), { items: clean(cur().students.filter((x) => x.id !== id)), updatedAt: Date.now() });
-      cur().boards.forEach((b) => { if (b.done[id]) batch.update(R.board(b.id), new FieldPath('done', id), deleteField()); });
+      cur().boards.forEach((b) => { if (!b.daily && b.done[id]) batch.update(R.board(b.id), new FieldPath('done', id), deleteField()); });
       act(batch.commit());
     },
     renumber() { saveRoster(cur().students.map((x, i) => Object.assign({}, x, { no: i + 1 }))); },
@@ -740,13 +957,14 @@ function BoardView(root, store, ctx) {
 
   function updateCol(c, b, s, meta) {
     c.title.textContent = b.title;
-    const total = s.students.length;
-    const done = doneCount(b, s);
+    const members = membersOf(b, s);
+    const total = members.length;
+    const done = doneCount(b, members);
     c.count.innerHTML = '<b>' + done + '</b> / ' + total + '명';
     c.bar.style.width = pct(done, total) + '%';
     c.grid.setAttribute('aria-label', b.title);
     const seen = new Set();
-    s.students.forEach((st, i) => {
+    members.forEach((st, i) => {
       seen.add(st.id);
       let el = c.cards.get(st.id);
       const isNew = !el;
@@ -770,6 +988,9 @@ function BoardView(root, store, ctx) {
       if (on && !was && !isNew && !meta.initial) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
     });
     c.cards.forEach((el, sid) => { if (!seen.has(sid)) { el.remove(); c.cards.delete(sid); } });
+    let none = c.grid.querySelector('.col-empty');
+    if (!total && !none) { none = document.createElement('div'); none.className = 'col-empty'; none.textContent = '이 판에 학생이 없어요'; c.grid.appendChild(none); }
+    else if (total && none) none.remove();
     if (c.n !== total) { c.n = total; fit(c); }
     const all = total > 0 && done === total;
     if (all && c.all === false && !meta.initial) celebrate(c);
@@ -805,8 +1026,7 @@ function BoardView(root, store, ctx) {
     paintPager(list.length);
     if (msgEl.classList.contains('idle')) msgEl.innerHTML = idleHTML();
     const shown = list.slice(page * perPage, (page + 1) * perPage);
-    const empty = !s.students.length ? '학생 명단이 비어 있어요.<br>교사 화면의 학생 명단에서 넣어 주세요.'
-      : !shown.length ? '지금은 보여 줄 판이 없어요.<br>교사 화면에서 ‘태블릿에 표시’를 눌러 주세요.' : '';
+    const empty = !shown.length ? '지금은 보여 줄 판이 없어요.<br>교사 화면에서 ‘태블릿에 표시’를 눌러 주세요.' : '';
     if (empty) {
       Array.from(cols.keys()).forEach(dropCol);
       colsEl.innerHTML = '<div class="empty">' + empty + '</div>';
@@ -866,22 +1086,21 @@ function BoardView(root, store, ctx) {
     if ((guard.get(key) || 0) > now) return;   /* 방금 바뀐 카드를 곧바로 또 누른 것은 무시합니다 */
     const s = store.get();
     const b = s.boards.find((x) => x.id === bid);
-    const st = s.students.find((x) => x.id === sid);
+    const members = b ? membersOf(b, s) : [];
+    const st = members.find((x) => x.id === sid);
     if (!b || !st) return;
+    /* 아래 안내 문구는 그대로 두고, 도장과 소리로만 알려 줍니다 */
     if (b.done[sid]) {
       if (!s.settings.selfCancel) { say('이미 다 했어요. 바꾸려면 선생님께 말해요.'); return; }
       guard.set(key, now + GUARD_MS);
       store.unmark(bid, sid, 'tablet');
       if (s.settings.sound) Sound.play('undo');
-      say(st.no + '번 ' + st.name + ', 취소했어요');
       return;
     }
-    const allDone = s.students.every((x) => x.id === sid || b.done[x.id]);   /* 저장 전에 미리 셉니다 */
+    const allDone = members.every((x) => x.id === sid || b.done[x.id]);   /* 저장 전에 미리 셉니다 */
     guard.set(key, now + GUARD_MS);
     store.markDone(bid, sid, 'tablet');
     if (s.settings.sound) Sound.play(allDone ? 'all' : 'done');
-    say(allDone ? '모두 다 했어요! 다 같이 박수!'
-      : s.settings.praise ? callName(st.name) + ', 잘했어요!' : st.no + '번 ' + st.name + ', 다 했어요');
   }
 
   /* 선생님 전용 설정: 잠금번호 */
@@ -994,6 +1213,8 @@ function BoardView(root, store, ctx) {
 function TeacherView(root, store, ctx) {
   let sel = null, pendingSel = null;
   let knownPending = null;
+  let detailTab = 'now', lastMiss = [];
+  const hist = { bid: null, ym: null, data: null, err: null, unsub: null, view: 'table', student: null };
   let rosterEditing = false, rosterPending = false;
   let titleEditing = false;
 
@@ -1030,7 +1251,7 @@ function TeacherView(root, store, ctx) {
     </div>
 
     <div class="tab-panel" data-panel="roster" role="tabpanel" hidden>
-      <p class="lead">번호 순서대로 태블릿에 카드가 놓여요. 개인정보 보호를 위해 성은 빼고 이름만 적기를 권해요. <span class="count" id="tv-rcount"></span></p>
+      <p class="lead">번호 순서대로 태블릿에 카드가 놓여요. 개인정보 보호를 위해 성은 빼고 이름만 적기를 권해요. 우유 급식처럼 일부 학생만 쓰는 판은 판 관리에서 그 판을 고른 뒤 ‘학생’ 탭에서 골라요. <span class="count" id="tv-rcount"></span></p>
       <div class="row addrow">
         <input class="input no-in" id="tv-add-no" type="number" min="1" max="99" inputmode="numeric" placeholder="번호" aria-label="추가할 학생 번호, 비우면 자동으로 붙어요">
         <input class="input" id="tv-add-name" maxlength="20" autocomplete="off" placeholder="이름" aria-label="추가할 학생 이름">
@@ -1079,11 +1300,6 @@ function TeacherView(root, store, ctx) {
         <p>다 한 카드를 한 번 더 누르면 ‘아직’으로 돌아가요. 빠르게 두 번 눌러 곧바로 취소되는 일을 막으려고, 누른 뒤 1초 동안은 같은 카드를 다시 눌러도 반응하지 않아요. 막기로 두면 선생님만 바꿀 수 있어요.</p>
         <div class="opts"><button type="button" data-act="self-cancel" data-v="1">허용</button><button type="button" data-act="self-cancel" data-v="0">막기</button></div>
       </section>
-      <section class="set">
-        <h3>칭찬 문구</h3>
-        <p>누른 학생의 이름을 불러 ‘민준아, 잘했어요!’처럼 보여 줘요. 끄면 ‘1번 민준, 다 했어요’로 짧게 알려요.</p>
-        <div class="opts"><button type="button" data-act="praise" data-v="1">보이기</button><button type="button" data-act="praise" data-v="0">숨기기</button></div>
-      </section>
       <section class="set last">
         <h3>태블릿 새로고침</h3>
         <p>화면 파일을 새로 올린 뒤 누르면, 연결된 태블릿이 곧바로 새 화면을 불러와요. 태블릿은 몇 분마다 새 버전을 스스로 확인하기도 해요.</p>
@@ -1128,21 +1344,21 @@ function TeacherView(root, store, ctx) {
     const archived = s.boards.filter((b) => b.archived);
     if (pendingSel && active.some((b) => b.id === pendingSel)) { sel = pendingSel; pendingSel = null; }
     if (!sel || !active.some((b) => b.id === sel)) sel = s.show.find((id) => active.some((b) => b.id === id)) || (active[0] ? active[0].id : null);
-    const total = s.students.length;
     keepFocus(blist, () => {
       blist.innerHTML = active.length ? active.map((b) => {
-        const d = doneCount(b, s);
+        const mem = membersOf(b, s);
+        const d = doneCount(b, mem), total = mem.length;
         const on = s.show.includes(b.id);
         return '<li class="bitem' + (b.id === sel ? ' sel' : '') + '">' +
           '<button type="button" class="bsel" data-act="select" data-id="' + b.id + '"' + (b.id === sel ? ' aria-current="true"' : '') + '>' +
-          '<span class="t"><span>' + esc(b.title) + '</span><span class="c">' + d + '/' + total + '</span></span>' +
+          '<span class="t"><span>' + esc(b.title) + (b.daily ? '<span class="tag">매일</span>' : '') + '</span><span class="c">' + d + '/' + total + '</span></span>' +
           '<span class="mini"><i style="width:' + pct(d, total) + '%"></i></span></button>' +
           '<div class="bfoot"><button type="button" class="showbtn' + (on ? ' on' : '') + '" data-act="show" data-id="' + b.id + '" aria-pressed="' + on + '">' + (on ? '태블릿에 표시 중' : '태블릿에 표시') + '</button></div></li>';
       }).join('') : '<li class="none">진행 중인 판이 없어요. 위에서 새 판을 만들어 주세요.</li>';
     });
     $('#tv-asum').textContent = '보관함 (' + archived.length + ')';
     $('#tv-alist').innerHTML = archived.length ? archived.map((b) =>
-      '<div class="arow"><span>' + esc(b.title) + ' <span class="c">' + doneCount(b, s) + '/' + total + '</span></span>' +
+      '<div class="arow"><span>' + esc(b.title) + ' <span class="c">' + doneCount(b, membersOf(b, s)) + '/' + membersOf(b, s).length + '</span></span>' +
       '<span class="acts"><button type="button" class="btn sm" data-act="restore" data-id="' + b.id + '">되살리기</button>' +
       '<button type="button" class="btn sm danger" data-act="delete" data-id="' + b.id + '">지우기</button></span></div>'
     ).join('') : '<p class="none">보관한 판이 없어요.</p>';
@@ -1152,39 +1368,217 @@ function TeacherView(root, store, ctx) {
   /* --- 선택한 판의 자세한 모습 --- */
   function renderDetail(s, meta) {
     const b = s.boards.find((x) => x.id === sel && !x.archived);
-    if (!b) { if (!titleEditing) detailEl.innerHTML = '<p class="none">판 목록에서 판을 고르거나 새로 만들어 주세요.</p>'; return; }
-    const head = detailEl.querySelector('.dt-title');
-    if (!(titleEditing && head && head.dataset.id === b.id)) {
+    if (!b) { stopHist(); detailEl.innerHTML = '<p class="none">판 목록에서 판을 고르거나 새로 만들어 주세요.</p>'; return; }
+    let head = detailEl.querySelector('.dt-title');
+    if (!head || head.dataset.id !== b.id) {
       detailEl.innerHTML = '<input class="dt-title" data-id="' + b.id + '" maxlength="40" aria-label="판 이름, 눌러서 고칠 수 있어요"><div class="dt-body"></div>';
-      detailEl.querySelector('.dt-title').value = b.title;
+      head = detailEl.querySelector('.dt-title');
+      head.value = b.title;
+    } else if (!titleEditing && document.activeElement !== head) {
+      head.value = b.title;
     }
     const body = detailEl.querySelector('.dt-body');
-    const total = s.students.length;
-    const todo = s.students.filter((x) => !b.done[x.id]);
-    const done = s.students.filter((x) => b.done[x.id]);
-    const on = s.show.includes(b.id);
-    const chip = (x, d) => '<button type="button" class="chip' + (d ? ' d' : '') + '" data-act="' + (d ? 'unmark' : 'mark') + '" data-id="' + x.id + '"><b>' + x.no + '</b>' + esc(x.name) + '</button>';
-    const metaText = !total ? '학생 명단이 비어 있어요' : todo.length ? done.length + '명 다 했어요, ' + todo.length + '명 남았어요' : '모두 다 했어요';
-    keepFocus(body, () => {
-      body.innerHTML =
-        '<p class="dt-meta">' + metaText + (on ? ' (태블릿에 표시 중)' : '') + '</p>' +
-        '<div class="dt-bar"><i style="width:' + pct(done.length, total) + '%"></i></div>' +
-        '<div class="grp"><h3>아직 안 한 학생 <span class="count' + (todo.length ? ' todo' : '') + '">' + todo.length + '명</span></h3>' +
-        '<div class="chips">' + (todo.map((x) => chip(x, false)).join('') || '<span class="none">모두 다 했어요!</span>') + '</div>' +
-        '<p class="hint">이름을 누르면 다 한 것으로 바꿔요.</p></div>' +
-        '<div class="grp"><h3>다 한 학생 <span class="count">' + done.length + '명</span></h3>' +
-        '<div class="chips">' + (done.map((x) => chip(x, true)).join('') || '<span class="none">아직 아무도 없어요.</span>') + '</div>' +
-        '<p class="hint">이름을 누르면 다시 ‘아직’으로 돌려요.</p></div>' +
-        '<div class="dt-actions">' +
-        '<button type="button" class="btn' + (on ? '' : ' primary') + '" data-act="show" data-id="' + b.id + '">' + (on ? '태블릿에서 숨기기' : '태블릿에 표시') + '</button>' +
-        '<button type="button" class="btn" data-act="reset">처음부터 다시</button>' +
-        '<button type="button" class="btn" data-act="archive">보관하기</button></div>';
-    });
-    if (meta && meta.by === 'tablet' && meta.bid === b.id) {
-      const q = meta.type === 'done' ? '.chip.d' : meta.type === 'undo' ? '.chip:not(.d)' : '';
-      const c = q ? body.querySelector(q + '[data-id="' + meta.sid + '"]') : null;
-      if (c) c.classList.add(meta.type === 'done' ? 'new' : 'undo-new');
+    if (body.dataset.bid !== b.id) {
+      body.dataset.bid = b.id;
+      body.innerHTML = '<p class="dt-meta"></p><div class="dt-bar"><i></i></div><div class="dt-tools"></div><div class="dt-panel"></div><div class="dt-actions"></div>';
     }
+    if (detailTab === 'history' && !b.daily) detailTab = 'now';
+    const members = membersOf(b, s);
+    const total = members.length;
+    const todo = members.filter((x) => !b.done[x.id]);
+    const done = members.filter((x) => b.done[x.id]);
+    const on = s.show.includes(b.id);
+    const pre = b.daily ? '오늘 ' : '';
+    const metaText = !total ? '이 판에 학생이 없어요. 학생 탭에서 골라 주세요.'
+      : todo.length ? pre + done.length + '명 다 했어요, ' + todo.length + '명 남았어요' : pre + '모두 다 했어요';
+    body.querySelector('.dt-meta').textContent = metaText + (on ? ' (태블릿에 표시 중)' : '');
+    body.querySelector('.dt-bar i').style.width = pct(done.length, total) + '%';
+
+    const tab = (v, label) => '<button type="button" role="tab" data-act="dtab" data-v="' + v + '" aria-selected="' + (detailTab === v) + '">' + label + '</button>';
+    const tools = body.querySelector('.dt-tools');
+    keepFocus(tools, () => {
+      tools.innerHTML = '<div class="dtabs" role="tablist" aria-label="이 판 보기">' +
+        tab('now', b.daily ? '오늘 현황' : '현황') + tab('members', '학생 ' + total + '명') + (b.daily ? tab('history', '기록 달력') : '') + '</div>' +
+        '<div class="daily"><span>매일 반복</span><div class="opts sm" role="group" aria-label="매일 반복">' +
+        '<button type="button" data-act="daily" data-v="0" aria-pressed="' + !b.daily + '">끔</button>' +
+        '<button type="button" data-act="daily" data-v="1" aria-pressed="' + b.daily + '">켬</button></div></div>';
+    });
+
+    const panel = body.querySelector('.dt-panel');
+    if (detailTab === 'members') { stopHist(); panelMembers(panel, b, s); }
+    else if (detailTab === 'history') {
+      if (panel.dataset.kind !== 'history') { panel.dataset.kind = 'history'; panel.innerHTML = '<div id="tv-hist"></div>'; }
+      ensureHist(b, s);
+      paintHist();
+    } else {
+      stopHist();
+      panel.dataset.kind = 'now';
+      const chip = (x, d) => '<button type="button" class="chip' + (d ? ' d' : '') + '" data-act="' + (d ? 'unmark' : 'mark') + '" data-id="' + x.id + '"><b>' + x.no + '</b>' + esc(x.name) + '</button>';
+      keepFocus(panel, () => {
+        panel.innerHTML =
+          '<div class="grp"><h3>아직 안 한 학생 <span class="count' + (todo.length ? ' todo' : '') + '">' + todo.length + '명</span></h3>' +
+          '<div class="chips">' + (todo.map((x) => chip(x, false)).join('') || '<span class="none">' + (total ? '모두 다 했어요!' : '학생이 없어요.') + '</span>') + '</div>' +
+          '<p class="hint">이름을 누르면 다 한 것으로 바꿔요.</p></div>' +
+          '<div class="grp"><h3>다 한 학생 <span class="count">' + done.length + '명</span></h3>' +
+          '<div class="chips">' + (done.map((x) => chip(x, true)).join('') || '<span class="none">아직 아무도 없어요.</span>') + '</div>' +
+          '<p class="hint">이름을 누르면 다시 ‘아직’으로 돌려요.</p></div>';
+      });
+      if (meta && meta.by === 'tablet' && meta.bid === b.id) {
+        const q = meta.type === 'done' ? '.chip.d' : meta.type === 'undo' ? '.chip:not(.d)' : '';
+        const c = q ? panel.querySelector(q + '[data-id="' + meta.sid + '"]') : null;
+        if (c) c.classList.add(meta.type === 'done' ? 'new' : 'undo-new');
+      }
+    }
+
+    const acts = body.querySelector('.dt-actions');
+    keepFocus(acts, () => {
+      acts.innerHTML =
+        '<button type="button" class="btn' + (on ? '' : ' primary') + '" data-act="show" data-id="' + b.id + '">' + (on ? '태블릿에서 숨기기' : '태블릿에 표시') + '</button>' +
+        '<button type="button" class="btn" data-act="reset">' + (b.daily ? '오늘 기록 지우기' : '처음부터 다시') + '</button>' +
+        '<button type="button" class="btn" data-act="archive">보관하기</button>';
+    });
+  }
+
+  /* --- 이 판의 학생 고르기 --- */
+  function panelMembers(panel, b, s) {
+    if (panel.dataset.kind !== 'members' || panel.dataset.bid !== b.id) {
+      panel.dataset.kind = 'members';
+      panel.dataset.bid = b.id;
+      lastMiss = [];
+      panel.innerHTML =
+        '<div class="m-mode"></div>' +
+        '<p class="hint m-all"></p>' +
+        '<div class="m-pick">' +
+          '<p class="hint">이름을 누르면 이 판에 넣거나 뺄 수 있어요. 노랗게 칠해진 학생이 이 판의 학생이에요.</p>' +
+          '<div class="chips pick m-chips"></div>' +
+          '<div class="row"><button type="button" class="btn sm" data-act="pick-all">모두 넣기</button><button type="button" class="btn sm" data-act="pick-none">모두 빼기</button></div>' +
+          '<details class="bulk"><summary>번호나 이름을 붙여넣어 고르기</summary>' +
+            '<p class="hint">우유 급식 명단처럼 한 줄에 한 명씩 붙여넣으면, 반 명단에서 같은 학생을 찾아 골라 줘요. 번호만 적어도 되고, 성이 붙은 이름도 찾아요.</p>' +
+            '<textarea id="tv-pick-text" placeholder="3 도윤&#10;5 시우&#10;7" aria-label="이 판에 넣을 학생"></textarea>' +
+            '<div class="row"><button type="button" class="btn" data-act="pick-paste">붙여넣은 학생으로 고르기</button><span class="msg" id="tv-pick-msg" role="status"></span></div>' +
+            '<div class="miss" id="tv-pick-miss"></div>' +
+          '</details>' +
+          '<div class="extra"><h4>이 판에만 있는 학생 <span class="count m-ecount"></span></h4>' +
+            '<p class="hint">반 명단에 없는 학생을 이 판에만 넣을 수 있어요. 반 명단은 바뀌지 않아요.</p>' +
+            '<div class="chips m-extra"></div>' +
+            '<div class="row addrow"><input class="input no-in" id="tv-extra-no" type="number" min="1" max="99" inputmode="numeric" placeholder="번호" aria-label="이 판에만 넣을 학생 번호, 비우면 자동">' +
+            '<input class="input" id="tv-extra-name" maxlength="20" autocomplete="off" placeholder="이름" aria-label="이 판에만 넣을 학생 이름">' +
+            '<button type="button" class="btn" data-act="extra-add">추가</button></div>' +
+          '</div>' +
+        '</div>';
+    }
+    const pick = !!b.roster;
+    const mode = panel.querySelector('.m-mode');
+    keepFocus(mode, () => {
+      mode.innerHTML = '<div class="opts" role="group" aria-label="이 판의 학생"><button type="button" data-act="roster-mode" data-v="all" aria-pressed="' + !pick + '">반 전체 학생</button>' +
+        '<button type="button" data-act="roster-mode" data-v="pick" aria-pressed="' + pick + '">골라서</button></div>';
+    });
+    const allHint = panel.querySelector('.m-all');
+    allHint.hidden = pick;
+    allHint.textContent = '반 명단의 학생 ' + s.students.length + '명이 모두 이 판에 나와요. 우유 급식처럼 일부 학생만 해당하면 ‘골라서’를 누르세요.';
+    panel.querySelector('.m-pick').hidden = !pick;
+    if (!pick) return;
+    const ids = new Set(b.roster.ids);
+    const chips = panel.querySelector('.m-chips');
+    keepFocus(chips, () => {
+      chips.innerHTML = s.students.map((x) => '<button type="button" class="chip' + (ids.has(x.id) ? ' d' : '') + '" data-act="pick" data-id="' + x.id + '" aria-pressed="' + ids.has(x.id) + '"><b>' + x.no + '</b>' + esc(x.name) + '</button>').join('') ||
+        '<span class="none">반 명단이 비어 있어요.</span>';
+    });
+    panel.querySelector('.m-ecount').textContent = b.roster.extra.length + '명';
+    const ex = panel.querySelector('.m-extra');
+    keepFocus(ex, () => {
+      ex.innerHTML = b.roster.extra.map((x) => '<span class="chip"><b>' + (Number(x.no) || '') + '</b>' + esc(x.name) +
+        '<button type="button" class="x" data-act="extra-del" data-id="' + esc(x.id) + '" aria-label="' + esc(x.name) + ' 빼기">×</button></span>').join('');
+    });
+  }
+  function paintMiss() {
+    const box = $('#tv-pick-miss');
+    if (!box) return;
+    const named = lastMiss.filter((e) => e.name);
+    const nums = lastMiss.filter((e) => !e.name);
+    box.innerHTML = (named.length ? '<p>반 명단에 없는 학생 ' + named.length + '명: ' + named.map((e) => esc((e.no ? e.no + ' ' : '') + e.name)).join(', ') +
+      '</p><button type="button" class="btn sm" data-act="extra-from-miss">이 판에만 추가</button>' : '') +
+      (nums.length ? '<p>반 명단에 없는 번호: ' + nums.map((e) => e.no + '번').join(', ') + '</p>' : '');
+  }
+
+  /* --- 기록 달력 (매일 반복 판) --- */
+  function ensureHist(b, s) {
+    if (!hist.ym) hist.ym = (s.today || todayKey()).slice(0, 7);
+    if (hist.unsub && hist.bid === b.id) return;
+    stopHist();
+    hist.bid = b.id;
+    hist.data = null;
+    hist.err = null;
+    hist.unsub = store.watchMonth(b.id, hist.ym, (map, err) => {
+      if (err) hist.err = err; else { hist.data = map; hist.err = null; }
+      paintHist();
+    });
+  }
+  function stopHist() {
+    if (hist.unsub) { try { hist.unsub(); } catch (e) { /* 무시 */ } }
+    hist.unsub = null; hist.bid = null; hist.data = null; hist.err = null;
+  }
+  function paintHist() {
+    const el = $('#tv-hist');
+    const s = store.get();
+    const b = s && s.boards.find((x) => x.id === hist.bid);
+    if (!el || !b) return;
+    keepFocus(el, () => { el.innerHTML = histHTML(b, s, membersOf(b, s)); });
+  }
+  function histHTML(b, s, members) {
+    const [y, m] = hist.ym.split('-').map(Number);
+    const n = new Date(y, m, 0).getDate();
+    const today = s.today || todayKey();
+    const head = '<div class="hist-head"><button type="button" class="btn sm" data-act="hist-prev" aria-label="이전 달">‹</button>' +
+      '<strong>' + y + '년 ' + m + '월</strong>' +
+      '<button type="button" class="btn sm" data-act="hist-next" aria-label="다음 달"' + (hist.ym >= today.slice(0, 7) ? ' disabled' : '') + '>›</button>' +
+      '<div class="opts sm" role="group" aria-label="보는 방법"><button type="button" data-act="hist-view" data-v="table" aria-pressed="' + (hist.view === 'table') + '">한눈에 보기</button>' +
+      '<button type="button" data-act="hist-view" data-v="cal" aria-pressed="' + (hist.view === 'cal') + '">학생별 달력</button></div></div>';
+    if (hist.err) return head + '<p class="none">기록을 불러오지 못했어요. ' + esc(describeError(hist.err)) + '</p>';
+    if (!hist.data) return head + '<p class="none">기록을 불러오는 중이에요…</p>';
+    if (!members.length) return head + '<p class="none">이 판에 학생이 없어요.</p>';
+    const data = hist.data;
+    const keyOf = (d) => hist.ym + '-' + pad2(d);
+    const ran = new Set(Object.keys(data).filter((k) => Object.keys(data[k] || {}).length));
+    const wd = (d) => new Date(y, m - 1, d).getDay();
+    const cell = (d, sid) => {
+      const k = keyOf(d);
+      const on = !!(data[k] && data[k][sid]);
+      return { k, on, miss: !on && ran.has(k) && k < today, fut: k > today, we: wd(d) === 0 || wd(d) === 6, today: k === today };
+    };
+    const label = (d, st, c) => m + '월 ' + d + '일 ' + st.name + (c.on ? ', 했어요' : ', 안 했어요');
+    const legend = '<div class="legend"><span><i class="l-on"></i>다 한 날</span><span><i class="l-miss"></i>판을 연 날인데 안 한 날</span><span>칸을 누르면 그날 기록을 고칠 수 있어요</span></div>';
+    if (hist.view === 'cal') {
+      const st = members.find((x) => x.id === hist.student) || members[0];
+      hist.student = st.id;
+      const picker = '<div class="chips hist-who">' + members.map((x) => '<button type="button" class="chip' + (x.id === st.id ? ' d' : '') + '" data-act="hist-student" data-id="' + x.id + '" aria-pressed="' + (x.id === st.id) + '"><b>' + x.no + '</b>' + esc(x.name) + '</button>').join('') + '</div>';
+      let cells = WEEK.split('').map((w) => '<div class="wd">' + w + '</div>').join('') + '<div></div>'.repeat(wd(1));
+      let cnt = 0;
+      for (let d = 1; d <= n; d++) {
+        const c = cell(d, st.id);
+        if (c.on) cnt++;
+        cells += '<button type="button" class="cd' + (c.on ? ' on' : c.miss ? ' miss' : '') + (c.we ? ' we' : '') + (c.today ? ' today' : '') + '" data-act="hist-cell" data-day="' + c.k + '" data-id="' + st.id + '" aria-pressed="' + c.on + '" aria-label="' + esc(label(d, st, c)) + '"' + (c.fut ? ' disabled' : '') + '><span>' + d + '</span></button>';
+      }
+      return head + picker + '<div class="cal">' + cells + '</div>' +
+        '<p class="cal-sum"><b>' + st.no + '번 ' + esc(st.name) + '</b>: ' + m + '월에 판을 연 ' + ran.size + '일 중 ' + cnt + '일 했어요.</p>' + legend;
+    }
+    let th = '<th class="nm" scope="col">학생</th>';
+    for (let d = 1; d <= n; d++) {
+      const c = cell(d, '');
+      th += '<th scope="col" class="' + (c.we ? 'we' : '') + (c.today ? ' today' : '') + '">' + d + '<small>' + WEEK[wd(d)] + '</small></th>';
+    }
+    th += '<th scope="col" class="sum">합계</th>';
+    const rows = members.map((st) => {
+      let cnt = 0, tds = '';
+      for (let d = 1; d <= n; d++) {
+        const c = cell(d, st.id);
+        if (c.on) cnt++;
+        tds += '<td' + (c.we ? ' class="we"' : '') + '><button type="button" class="hc' + (c.on ? ' on' : c.miss ? ' miss' : '') + '" data-act="hist-cell" data-day="' + c.k + '" data-id="' + st.id + '" aria-pressed="' + c.on + '" aria-label="' + esc(label(d, st, c)) + '"' + (c.fut ? ' disabled' : '') + '></button></td>';
+      }
+      return '<tr><th class="nm" scope="row"><b>' + st.no + '</b>' + esc(st.name) + '</th>' + tds + '<td class="sum">' + cnt + '</td></tr>';
+    }).join('');
+    return head + '<p class="hist-note">이번 달에 판을 연 날: ' + ran.size + '일</p>' +
+      '<div class="hist-scroll"><table class="hist"><thead><tr>' + th + '</tr></thead><tbody>' + rows + '</tbody></table></div>' + legend;
   }
 
   /* --- 학생 명단 --- */
@@ -1207,7 +1601,6 @@ function TeacherView(root, store, ctx) {
     const st = s.settings;
     root.querySelectorAll('[data-act="sound"]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.v === '1') === !!st.sound)));
     root.querySelectorAll('[data-act="self-cancel"]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.v === '1') === !!st.selfCancel)));
-    root.querySelectorAll('[data-act="praise"]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.v === '1') === !!st.praise)));
     renderDevices(s);
   }
 
@@ -1325,7 +1718,7 @@ function TeacherView(root, store, ctx) {
       case 'bulk-replace': {
         const list = parseRoster($('#tv-bulk').value);
         if (!list.length) { note('#tv-bulk-msg', '붙여넣은 이름이 없어요.', true); break; }
-        confirmBox('지금 명단 ' + s.students.length + '명을 새 명단 ' + list.length + '명으로 바꿀까요? 모든 판의 완료 기록이 지워져요.', '명단 바꾸기').then((ok) => {
+        confirmBox('지금 명단 ' + s.students.length + '명을 새 명단 ' + list.length + '명으로 바꿀까요? 이름이 같은 학생은 판 명단과 기록이 그대로 이어지고, 새 명단에 없는 학생의 기록은 지워져요.', '명단 바꾸기').then((ok) => {
           if (!ok) return;
           store.replaceStudents(list);
           $('#tv-bulk').value = '';
@@ -1337,7 +1730,92 @@ function TeacherView(root, store, ctx) {
       case 'save-pin': savePin(); break;
       case 'sound': store.setSetting('sound', t.dataset.v === '1'); break;
       case 'self-cancel': store.setSetting('selfCancel', t.dataset.v === '1'); break;
-      case 'praise': store.setSetting('praise', t.dataset.v === '1'); break;
+      case 'dtab': detailTab = t.dataset.v; renderDetail(s, {}); break;
+      case 'daily': {
+        const b = s.boards.find((x) => x.id === sel);
+        const want = t.dataset.v === '1';
+        if (!b || b.daily === want) break;
+        if (want) {
+          store.setDaily(sel, true);
+          flash('매일 반복을 켰어요. 날마다 자정이 지나면 빈 판으로 바뀌고, 지난 기록은 기록 달력에 남아요.');
+        } else {
+          confirmBox('매일 반복을 끌까요? 지금까지 쌓인 날짜별 기록은 지워지지 않고 남아 있어요.', '끄기').then((ok) => { if (ok) { store.setDaily(sel, false); if (detailTab === 'history') detailTab = 'now'; } });
+        }
+        break;
+      }
+      case 'roster-mode': {
+        const b = s.boards.find((x) => x.id === sel);
+        if (!b) break;
+        if (t.dataset.v === 'pick') {
+          if (!b.roster) { store.setBoardRoster(sel, { ids: s.students.map((x) => x.id), extra: [] }); flash('반 학생을 모두 넣어 두었어요. 빠질 학생을 눌러 빼거나, 명단을 붙여넣어 고르세요.'); }
+        } else if (b.roster) {
+          confirmBox('이 판을 반 전체 학생으로 되돌릴까요? 골라 둔 학생과 이 판에만 있는 학생 목록은 지워져요.', '반 전체로').then((ok) => { if (ok) store.setBoardRoster(sel, null); });
+        }
+        break;
+      }
+      case 'pick': case 'pick-all': case 'pick-none': {
+        const b = s.boards.find((x) => x.id === sel);
+        if (!b || !b.roster) break;
+        const ids = new Set(act === 'pick-all' ? s.students.map((x) => x.id) : act === 'pick-none' ? [] : b.roster.ids);
+        if (act === 'pick') { if (ids.has(id)) ids.delete(id); else ids.add(id); }
+        store.setBoardRoster(sel, { ids: s.students.map((x) => x.id).filter((x) => ids.has(x)), extra: b.roster.extra });
+        break;
+      }
+      case 'pick-paste': {
+        const b = s.boards.find((x) => x.id === sel);
+        if (!b || !b.roster) break;
+        const entries = parsePick($('#tv-pick-text').value);
+        if (!entries.length) { note('#tv-pick-msg', '붙여넣은 학생이 없어요.', true); break; }
+        const r = matchPick(entries, s.students);
+        store.setBoardRoster(sel, { ids: s.students.map((x) => x.id).filter((x) => r.ids.includes(x)), extra: b.roster.extra });
+        lastMiss = r.miss;
+        paintMiss();
+        note('#tv-pick-msg', r.ids.length + '명을 골랐어요.' + (r.miss.length ? ' 찾지 못한 학생은 아래를 보세요.' : ''));
+        break;
+      }
+      case 'extra-from-miss': case 'extra-add': {
+        const b = s.boards.find((x) => x.id === sel);
+        if (!b || !b.roster) break;
+        let adds;
+        if (act === 'extra-add') {
+          const nameEl = $('#tv-extra-name'), noEl = $('#tv-extra-no');
+          const name = nameEl.value.trim().replace(/\s+/g, ' ').slice(0, 20);
+          if (!name) { nameEl.focus(); break; }
+          const n = parseInt(noEl.value, 10);
+          adds = [{ no: n >= 1 && n <= 99 ? n : null, name }];
+          nameEl.value = ''; noEl.value = '';
+        } else {
+          adds = lastMiss.filter((e) => e.name);
+          lastMiss = lastMiss.filter((e) => !e.name);
+          paintMiss();
+        }
+        let max = Math.max(s.students.reduce((mx, x) => Math.max(mx, x.no), 0), b.roster.extra.reduce((mx, x) => Math.max(mx, Number(x.no) || 0), 0));   /* 반 번호와 겹치지 않게 뒤 번호를 줍니다 */
+        const extra = b.roster.extra.concat(adds.map((e) => ({ id: rid('x'), no: e.no || ++max, name: e.name })));
+        store.setBoardRoster(sel, { ids: b.roster.ids, extra });
+        break;
+      }
+      case 'extra-del': {
+        const b = s.boards.find((x) => x.id === sel);
+        if (!b || !b.roster) break;
+        store.setBoardRoster(sel, { ids: b.roster.ids, extra: b.roster.extra.filter((x) => x.id !== id) });
+        break;
+      }
+      case 'hist-prev': case 'hist-next': {
+        const [y, m] = hist.ym.split('-').map(Number);
+        const d = new Date(y, m - 1 + (act === 'hist-next' ? 1 : -1), 1);
+        stopHist();
+        hist.ym = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+        renderDetail(s, {});
+        break;
+      }
+      case 'hist-view': hist.view = t.dataset.v; paintHist(); break;
+      case 'hist-student': hist.student = id; paintHist(); break;
+      case 'hist-cell': {
+        const b = s.boards.find((x) => x.id === sel);
+        if (!b) break;
+        store.setDayMark(sel, t.dataset.day, id, t.getAttribute('aria-pressed') !== 'true');
+        break;
+      }
       case 'approve': store.approveDevice(id); flash('태블릿을 승인했어요. 곧 그 태블릿에 판이 열려요.'); break;
       case 'remove-device': {
         const d = (s.devices || []).find((x) => x.id === id);
@@ -1359,6 +1837,7 @@ function TeacherView(root, store, ctx) {
     if (t.id === 'tv-new-title' && e.key === 'Enter') { e.preventDefault(); createBoard(); }
     else if (t.id === 'tv-add-name' && e.key === 'Enter') { e.preventDefault(); addOne(); }
     else if (t.id === 'tv-pin' && e.key === 'Enter') { e.preventDefault(); savePin(); }
+    else if (t.id === 'tv-extra-name' && e.key === 'Enter') { e.preventDefault(); const bt = root.querySelector('[data-act="extra-add"]'); if (bt) bt.click(); }
     else if (t.classList.contains('dt-title')) {
       if (e.key === 'Enter') { e.preventDefault(); t.blur(); }
       else if (e.key === 'Escape') { const b = store.get().boards.find((x) => x.id === t.dataset.id); if (b) t.value = b.title; t.blur(); }
@@ -1462,7 +1941,7 @@ function startVersionWatch(onNew) {
   setInterval(check, 10 * 60 * 1000);
   return check;
 }
-window.__dhs = { version: APP_VERSION };   /* 점검용 */
+window.__dhs = { version: APP_VERSION, checkDay: () => dayWatchers.forEach((f) => f()) };   /* 점검용 */
 
 /* ---------------- 교사 화면 ---------------- */
 async function bootTeacher() {
@@ -1561,6 +2040,7 @@ async function bootBoard() {
     if (view || store) return;
     const s = createCloudStore('board', {
       onListenError: (err) => {
+        if (err && err.scope === 'day') { if (view) view.say('매일 반복 판의 기록을 불러오지 못했어요. 선생님께 말해요.'); return; }
         if (err && err.code === 'permission-denied') {
           if (isTeacherUser) showOtherAccount();   /* 승인 취소는 기기 문서 감시에서 따로 처리합니다 */
         } else if (view) view.say('기록을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.');
