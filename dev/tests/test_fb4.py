@@ -1,0 +1,27 @@
+from playwright.sync_api import sync_playwright
+exec(open("/home/claude/fb/test_fb.py", encoding="utf-8").read().split("with sync_playwright() as p:")[0])
+with sync_playwright() as p:
+    b = p.chromium.launch()
+    ctx = b.new_context(viewport={"width": 1280, "height": 860}); setup(ctx)
+    T = ctx.new_page(); watch(T, "교사")
+    T.goto(BASE + "?teacher"); T.wait_for_selector("#login"); T.click("#login"); T.wait_for_selector("#teacher .tabs")
+    T.locator("#teacher details.bulk summary").click(); T.fill("#tv-bulk", "1 민준\n2 서연")
+    T.click('#teacher [data-act="bulk-add"]'); T.click('#teacher [data-tab="boards"]')
+    T.fill("#tv-new-title", "우유 급식"); T.press("#tv-new-title", "Enter"); T.wait_for_timeout(200)
+    # 예전 규칙 상태에서 매일 반복 켜기
+    T.evaluate("window.__MOCK_DENY_DAYS = true")
+    T.locator('#tv-detail [data-act="daily"][data-v="1"]').click(); T.wait_for_timeout(300)
+    check("규칙을 안 바꿨으면 켜지지 않고 '보안 규칙' 안내", "보안 규칙" in T.locator("#tv-flash").inner_text() and T.locator("#tv-blist .tag").count() == 0, T.locator("#tv-flash").inner_text())
+    # 매일 판이 이미 있는데 규칙이 막힌 상태로 태블릿이 열려도 멈추지 않음
+    T.evaluate("window.__MOCK_DENY_DAYS = false")
+    T.locator('#tv-detail [data-act="daily"][data-v="1"]').click(); T.wait_for_timeout(300)
+    check("규칙을 바꾸면 켜짐", T.locator("#tv-blist .tag").count() == 1)
+    P = ctx.new_page(); watch(P, "교사PC판")
+    P.add_init_script("window.__MOCK_DENY_DAYS = true")
+    P.goto(BASE + "?teacher"); P.wait_for_selector("#login"); P.click("#login"); P.wait_for_selector("#teacher .tabs", timeout=5000)
+    check("날짜 기록을 못 읽어도 교사 화면이 열림", P.locator("#tv-blist .bitem").count() == 1)
+    P.goto(BASE); P.wait_for_selector("#app .col-title", timeout=5000)
+    check("날짜 기록을 못 읽어도 태블릿 화면이 열림", P.locator(".card").count() == 2)
+    b.close()
+print("\n".join(res)); print("통과 %d / 실패 %d" % (sum(r.startswith("OK") for r in res), sum(r.startswith("FAIL") for r in res)))
+print("--- errors ---"); print("\n".join(e for e in errs if "permission" not in e.lower()) or "(none)")
