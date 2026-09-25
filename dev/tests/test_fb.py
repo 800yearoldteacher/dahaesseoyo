@@ -19,6 +19,9 @@ def watch(pg, name):
     pg.on("pageerror", lambda e: errs.append(f"[{name}] pageerror: {e}"))
     pg.on("console", lambda m: errs.append(f"[{name}] console.{m.type}: {m.text}") if m.type == "error" and "ERR_FAILED" not in m.text and "net::" not in m.text else None)
 
+import re as _re
+APP_VER = _re.search(r"APP_VERSION = '([^']+)'", open("/home/claude/serve/index.html", encoding="utf-8").read()).group(1)
+
 with sync_playwright() as p:
     b = p.chromium.launch()
     ctx = b.new_context(viewport={"width": 1280, "height": 860})
@@ -132,7 +135,7 @@ with sync_playwright() as p:
     check("선생님 계정이면 승인 없이 판이 열림", P.locator(".wait-code").count() == 0 and P.locator(".card").count() == 24)
     P.locator(".gear").click()
     for k in "1234": P.locator(f'.keys [data-key="{k}"]').click()
-    check("설정 메뉴: 기기 정보와 화면 버전", "선생님 계정으로 열려 있어요" in P.locator(".sheet-box").inner_text() and "2026-09-22-2" in P.locator(".sheet-box").inner_text())
+    check("설정 메뉴: 기기 정보와 화면 버전", "선생님 계정으로 열려 있어요" in P.locator(".sheet-box").inner_text() and APP_VER in P.locator(".sheet-box").inner_text())
 
     # 로그인 오류 안내
     Y = ctx.new_page(); watch(Y, "오류")

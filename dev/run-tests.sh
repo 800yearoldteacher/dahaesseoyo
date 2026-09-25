@@ -16,7 +16,7 @@ for f in app auth firestore; do cat "$HERE/mock/core.js" "$HERE/mock/$f.js" > "/
 cp "$HERE"/tests/*.py /home/claude/fb/
 curl -s -o /dev/null http://localhost:8000/index.html || { (cd /home/claude/serve && setsid nohup python3 -m http.server 8000 > /tmp/http.log 2>&1 &); sleep 1; }
 cd /home/claude/fb
-for t in test_fb.py test_fb2.py test_fb3.py test_fb4.py; do
+for t in test_fb.py test_fb2.py test_fb3.py test_fb4.py test_fb5.py; do
   echo "=== $t ==="
   timeout 300 python3 "$t" 2>&1 | grep -E "^FAIL|통과|pageerror" || true
 done

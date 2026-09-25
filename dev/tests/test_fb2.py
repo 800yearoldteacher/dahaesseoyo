@@ -22,6 +22,8 @@ with sync_playwright() as p:
     B.locator(".nav.next").click(); B.wait_for_timeout(150)
     check("태블릿: 다음 쪽에 1개", B.locator(".col").count() == 1)
     B.locator(".nav.next").click(); B.wait_for_timeout(150)
+    check("태블릿: 끝에서 다음 → 처음 쪽", B.locator(".col").count() == 3)
+    B.locator(".nav.next").click(); B.wait_for_timeout(150)   # 새 판은 맨 뒤이므로 '알림장 4'는 둘째 쪽
     # 교사: 이름 바꾸기
     T.click('#teacher [data-tab="boards"]')
     T.fill("#tv-detail .dt-title", "알림장 쓰기 4"); T.press("#tv-detail .dt-title", "Enter"); B.wait_for_timeout(300)

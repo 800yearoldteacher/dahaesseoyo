@@ -22,7 +22,7 @@ with sync_playwright() as p:
     B.goto(BASE); B.wait_for_selector(".wait-code")
     T.click('#teacher [data-tab="settings"]'); T.click('#tv-devices [data-act="approve"]'); B.wait_for_selector("#app .col-title")
     T.click('#teacher [data-tab="boards"]')
-    check("준비: 태블릿에 두 판, 각 10명", titles(B) == ["우유 급식", "알림장 쓰기"] and col(B, "우유 급식").locator(".card").count() == 10)
+    check("준비: 태블릿에 두 판, 각 10명", titles(B) == ["알림장 쓰기", "우유 급식"] and col(B, "우유 급식").locator(".card").count() == 10)
 
     # 1) 판별 명단: 골라서 → 모두 넣은 채 시작
     T.locator('#tv-detail [data-act="dtab"][data-v="members"]').click()

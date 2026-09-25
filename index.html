@@ -178,7 +178,15 @@ button{cursor:pointer}
 .c{color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mini{display:block;height:5px;margin-top:7px;overflow:hidden;border-radius:3px;background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--line)}
 .mini i{display:block;height:100%;background:var(--done)}
-.bfoot{display:flex;justify-content:flex-end;padding:0 10px 10px}
+.bfoot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 10px}
+.ord{display:inline-flex;align-items:center;gap:4px}
+.ord button{width:30px;height:28px;padding:0;border:1px solid var(--line-2);border-radius:7px;background:var(--panel);color:var(--text-2);font-size:12px;line-height:1}
+.ord button:hover:not(:disabled){border-color:var(--accent);color:var(--text)}
+.ord button:disabled{opacity:.35}
+.grip{display:inline-grid;place-items:center;width:22px;height:28px;color:var(--text-2);font-size:16px;cursor:grab;user-select:none;-webkit-user-select:none}
+.bitem.dragging{opacity:.45}
+.bitem.drop-before{box-shadow:0 -3px 0 0 var(--accent)}
+.bitem.drop-after{box-shadow:0 3px 0 0 var(--accent)}
 .showbtn{padding:3px 10px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);color:var(--text-2);font-size:12.5px}
 .showbtn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .archive{margin-top:14px}
@@ -364,7 +372,7 @@ import { getAuth, onAuthStateChanged, signInAnonymously, signInWithPopup, Google
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc, getDoc, getDocs, writeBatch, deleteField, FieldPath, increment, query, where, documentId } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
 /* ---------- 기본값 ---------- */
-const APP_VERSION = '2026-09-22-2';   /* 파일을 고칠 때마다 이 번호를 바꾸면 태블릿이 새 버전을 알아챕니다 */
+const APP_VERSION = '2026-09-25-1';   /* 파일을 고칠 때마다 이 번호를 바꾸면 태블릿이 새 버전을 알아챕니다 */
 const FIREBASE_CONFIG = {
   apiKey: 'AIzaSyA7ZaFEC2JU4bNL8u35ESciXPPMHkXtLkk',
   authDomain: 'dahaesseoyo-board.firebaseapp.com',
@@ -635,9 +643,12 @@ function createCloudStore(role, handlers) {
         ids: Array.isArray(b.roster.ids) ? b.roster.ids.map(String) : [],
         extra: Array.isArray(b.roster.extra) ? b.roster.extra.filter((x) => x && x.id && x.name) : []
       } : null;
-      return { id: b.id, title: String(b.title || ''), createdAt: Number(b.createdAt) || 0, archived: !!b.archived, shown: !!b.shown, daily, roster, done };
+      const createdAt = Number(b.createdAt) || 0;
+      /* 순서: 선생님이 정한 order 번호가 작은 판이 앞입니다. 번호가 없는 예전 판은 예전처럼 새 판이 앞에 옵니다 */
+      const order = typeof b.order === 'number' && isFinite(b.order) ? b.order : -createdAt;
+      return { id: b.id, title: String(b.title || ''), createdAt, order, archived: !!b.archived, shown: !!b.shown, daily, roster, done };
     });
-    boards.sort((a, b) => b.createdAt - a.createdAt);
+    boards.sort((a, b) => (a.order - b.order) || (b.createdAt - a.createdAt));
     const show = boards.filter((b) => b.shown && !b.archived).map((b) => b.id);
     const settings = Object.assign({}, DEFAULT_SETTINGS, parts.settings || {});
     const first = !state;
@@ -739,7 +750,8 @@ function createCloudStore(role, handlers) {
     },
     addBoard(title, show) {
       const ref = doc(R.boards());
-      act(setDoc(ref, { title, createdAt: Date.now(), archived: false, shown: !!show, daily: false, roster: null, done: {} }));
+      const now = Date.now();
+      act(setDoc(ref, { title, createdAt: now, order: now, archived: false, shown: !!show, daily: false, roster: null, done: {} }));   /* 새 판은 맨 뒤 */
       return ref.id;
     },
     renameBoard(id, title) { act(updateDoc(R.board(id), { title })); },
@@ -748,7 +760,14 @@ function createCloudStore(role, handlers) {
       if (b && b.daily) act(setDoc(R.day(id, dayKey), { done: {} }));
       else act(updateDoc(R.board(id), { done: {} }));
     },
-    archiveBoard(id, flag) { act(updateDoc(R.board(id), flag ? { archived: true, shown: false } : { archived: false })); },
+    archiveBoard(id, flag) { act(updateDoc(R.board(id), flag ? { archived: true, shown: false } : { archived: false, order: Date.now() })); },   /* 되살린 판은 맨 뒤 */
+    /* 판 순서: ids 순서대로 0, 1, 2... 번호를 매깁니다 (바뀐 판만 적습니다) */
+    reorderBoards(ids) {
+      const batch = writeBatch(db);
+      let n = 0;
+      ids.forEach((bid, i) => { const b = boardOf(bid); if (b && b.order !== i) { batch.update(R.board(bid), { order: i }); n++; } });
+      if (n) act(batch.commit());
+    },
     async deleteBoard(id) {
       /* 판을 지울 때 날짜별 기록도 함께 지웁니다 */
       try {
@@ -1015,7 +1034,7 @@ function BoardView(root, store, ctx) {
   function render(s, meta) {
     lastState = s;
     const showSet = new Set(s.show);
-    const list = s.boards.filter((b) => !b.archived && showSet.has(b.id));   /* 교사 화면 목록 순서(새 판이 앞) */
+    const list = s.boards.filter((b) => !b.archived && showSet.has(b.id));   /* 교사 화면 목록 순서(선생님이 정한 순서) */
     if (prevShown && !meta.initial) {
       const idx = list.findIndex((b) => !prevShown.has(b.id));
       if (idx >= 0) page = Math.floor(idx / perPage);   /* 선생님이 새로 띄운 판이 있는 쪽으로 이동 */
@@ -1345,15 +1364,19 @@ function TeacherView(root, store, ctx) {
     if (pendingSel && active.some((b) => b.id === pendingSel)) { sel = pendingSel; pendingSel = null; }
     if (!sel || !active.some((b) => b.id === sel)) sel = s.show.find((id) => active.some((b) => b.id === id)) || (active[0] ? active[0].id : null);
     keepFocus(blist, () => {
-      blist.innerHTML = active.length ? active.map((b) => {
+      blist.innerHTML = active.length ? active.map((b, i) => {
         const mem = membersOf(b, s);
         const d = doneCount(b, mem), total = mem.length;
         const on = s.show.includes(b.id);
-        return '<li class="bitem' + (b.id === sel ? ' sel' : '') + '">' +
+        return '<li class="bitem' + (b.id === sel ? ' sel' : '') + '" data-bid="' + b.id + '">' +
           '<button type="button" class="bsel" data-act="select" data-id="' + b.id + '"' + (b.id === sel ? ' aria-current="true"' : '') + '>' +
           '<span class="t"><span>' + esc(b.title) + (b.daily ? '<span class="tag">매일</span>' : '') + '</span><span class="c">' + d + '/' + total + '</span></span>' +
           '<span class="mini"><i style="width:' + pct(d, total) + '%"></i></span></button>' +
-          '<div class="bfoot"><button type="button" class="showbtn' + (on ? ' on' : '') + '" data-act="show" data-id="' + b.id + '" aria-pressed="' + on + '">' + (on ? '태블릿에 표시 중' : '태블릿에 표시') + '</button></div></li>';
+          '<div class="bfoot"><span class="ord">' +
+          (active.length > 1 ? '<span class="grip" draggable="true" data-id="' + b.id + '" title="끌어서 순서 바꾸기" aria-hidden="true">⠿</span>' : '') +
+          '<button type="button" data-act="up" data-id="' + b.id + '" aria-label="' + esc(b.title) + ' 앞으로"' + (i === 0 ? ' disabled' : '') + '>▲</button>' +
+          '<button type="button" data-act="down" data-id="' + b.id + '" aria-label="' + esc(b.title) + ' 뒤로"' + (i === active.length - 1 ? ' disabled' : '') + '>▼</button></span>' +
+          '<button type="button" class="showbtn' + (on ? ' on' : '') + '" data-act="show" data-id="' + b.id + '" aria-pressed="' + on + '">' + (on ? '태블릿에 표시 중' : '태블릿에 표시') + '</button></div></li>';
       }).join('') : '<li class="none">진행 중인 판이 없어요. 위에서 새 판을 만들어 주세요.</li>';
     });
     $('#tv-asum').textContent = '보관함 (' + archived.length + ')';
@@ -1672,6 +1695,54 @@ function TeacherView(root, store, ctx) {
     if (nx) { nx.focus(); nx.select(); } else t.blur();
   }
 
+  /* --- 판 순서 바꾸기 (화살표 버튼, 끌어서 옮기기) --- */
+  function activeIds() { return store.get().boards.filter((b) => !b.archived).map((b) => b.id); }
+  function moveBoard(id, d) {
+    const ids = activeIds();
+    const from = ids.indexOf(id), to = from + d;
+    if (from < 0 || to < 0 || to >= ids.length) return;
+    ids.splice(from, 1);
+    ids.splice(to, 0, id);
+    store.reorderBoards(ids);
+  }
+  let dragId = null;
+  function clearDrop() { blist.querySelectorAll('.drop-before,.drop-after,.dragging').forEach((n) => n.classList.remove('drop-before', 'drop-after', 'dragging')); }
+  function dropAfter(li, y) { const r = li.getBoundingClientRect(); return y > r.top + r.height / 2; }
+  blist.addEventListener('dragstart', (e) => {
+    const g = e.target.closest && e.target.closest('.grip');
+    if (!g) return;
+    dragId = g.dataset.id;
+    const li = g.closest('.bitem');
+    try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', dragId); if (li) e.dataTransfer.setDragImage(li, 20, 20); } catch (_) {}
+    if (li) li.classList.add('dragging');
+  });
+  blist.addEventListener('dragover', (e) => {
+    if (!dragId) return;
+    const li = e.target.closest('.bitem');
+    if (!li) return;
+    e.preventDefault();
+    const after = dropAfter(li, e.clientY);
+    blist.querySelectorAll('.drop-before,.drop-after').forEach((n) => { if (n !== li) n.classList.remove('drop-before', 'drop-after'); });
+    li.classList.toggle('drop-after', after);
+    li.classList.toggle('drop-before', !after);
+  });
+  blist.addEventListener('drop', (e) => {
+    if (!dragId) return;
+    e.preventDefault();
+    const li = e.target.closest('.bitem');
+    const id = dragId;
+    dragId = null;
+    clearDrop();
+    if (!li || !li.dataset.bid || li.dataset.bid === id) return;
+    const after = dropAfter(li, e.clientY);
+    const ids = activeIds().filter((x) => x !== id);
+    const at = ids.indexOf(li.dataset.bid);
+    if (at < 0) return;
+    ids.splice(after ? at + 1 : at, 0, id);
+    store.reorderBoards(ids);
+  });
+  blist.addEventListener('dragend', () => { dragId = null; clearDrop(); });
+
   root.addEventListener('click', (e) => {
     const t = e.target.closest('button');
     if (!t || !root.contains(t)) return;
@@ -1684,6 +1755,8 @@ function TeacherView(root, store, ctx) {
       case 'new': createBoard(); break;
       case 'select': sel = id; renderBoards(s, {}); break;
       case 'show': store.toggleShow(id); break;
+      case 'up': moveBoard(id, -1); break;
+      case 'down': moveBoard(id, 1); break;
       case 'mark': if (sel) store.markDone(sel, id, 'teacher'); break;
       case 'unmark': if (sel) store.unmark(sel, id, 'teacher'); break;
       case 'reset':
